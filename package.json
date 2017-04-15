@@ -1,0 +1,38 @@
+{
+  "name": "poi-plugin-navy-staff",
+  "version": "0.1.0",
+  "description": "Extended fleet and airbase information plugin for poi, as moe as JLT",
+  "main": "index.es",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/poooi/plugin-navy-staff.git"
+  },
+  "keywords": [
+    "poi",
+    "kancolle",
+    "information"
+  ],
+  "author": "kagami",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/poooi/plugin-navy-staff/issues"
+  },
+  "homepage": "https://github.com/poooi/plugin-navy-staff#readme",
+  "devDependencies": {
+    "babel-eslint": "^7.2.2",
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb": "^14.1.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^4.0.0",
+    "eslint-plugin-react": "^6.10.3"
+  },
+  "poiPlugin": {
+    "title": "Navy staff",
+    "description": "Extended fleet and airbase information plugin for poi, as moe as JLT",
+    "icon": "fa/tencent-weibo",
+    "priority": 9
+  }
+}
