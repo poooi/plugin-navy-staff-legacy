@@ -10,9 +10,9 @@ module.exports = {
 		'es6': true,
 		'node': true,
 	},
-  "parserOptions": {
-    "ecmaFeatures": {
-      "jsx": true
+  'parserOptions': {
+    'ecmaFeatures': {
+      'jsx': true
     }
   },
   'parser': 'babel-eslint',
@@ -24,6 +24,7 @@ module.exports = {
     'import/extensions': ['error', { 'es': 'never' }],
     'import/no-extraneous-dependencies': 'off',
     'comma-dangle': ['error', 'always-multiline'],
+    'no-confusing-arrow': ['error', {'allowParens': true}]
 	},
   'settings': {
     'import/resolver': {
@@ -48,7 +49,8 @@ module.exports = {
       'react-dom',
       'redux',
       'semver',
-      'i18n-2'
+      'i18n-2',
+      'fast-memoize',
     ],
   },
 }
