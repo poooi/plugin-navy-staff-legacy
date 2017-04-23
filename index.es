@@ -9,6 +9,8 @@ import {
   fleetStateSelectorFactory,
 } from 'views/utils/selectors'
 
+import FleetView from './views/fleet-view'
+
 const defaultFleetNames = ['I', 'II', 'III', 'IV']
 
 function getStyle(state, disabled) {
@@ -103,6 +105,12 @@ const NavyStaff = connect(
             </Button>
           }
         </ButtonGroup>
+        {
+          activeId < 4 &&
+          <FleetView
+            fleetId={activeId}
+          />
+        }
       </div>
     )
   }
