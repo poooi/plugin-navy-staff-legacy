@@ -40,12 +40,14 @@ const TPByShipType = {
 export const getTransportPoint = (shipsData, equipsData) => {
   let TP = 0
   shipsData.forEach(([_ship = {}, $ship = {}]) => {
-    TP += TPByShipType[$ship.api_ship_type] || 0
+    TP += TPByShipType[$ship.api_stype] || 0
     TP += TPByShip[$ship.api_id] || 0
   })
 
-  equipsData.forEach(([_equip = {}, $equip = {}]) => {
-    TP += TPByItem[$equip.api_id] || 0
+  equipsData.forEach((equipData) => {
+    equipData.forEach(([_equip, $equip = {}, _] = []) => {
+      TP += TPByItem[$equip.api_id] || 0
+    })
   })
 
   return TP

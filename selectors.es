@@ -1,6 +1,8 @@
-import { memoize } from 'fast-memoize'
+import memoize from 'fast-memoize'
 import { createSelector } from 'reselect'
-import { stateSelector, equipDataSelectorFactory } from 'views/utils/selectors'
+import { stateSelector, equipDataSelectorFactory, fleetShipsDataSelectorFactory, fleetShipsEquipDataSelectorFactory } from 'views/utils/selectors'
+
+import { getTransportPoint } from './utils'
 
 // airbase: Array of all squadrons of all maps
 // squadron index is never guaranteed
@@ -38,4 +40,13 @@ export const squadronDataSelectorFactory = memoize(index =>
     squadronBaseDataSelectorFactory(index),
     squadronPlaneDataSelector(index),
   ], (squad, [_equip, $equip]) => [squad, _equip, $equip])
+)
+
+export const fleetInfoSelectorFactory = memoize(fleetId =>
+  createSelector([
+    fleetShipsDataSelectorFactory(fleetId),
+    fleetShipsEquipDataSelectorFactory(fleetId),
+  ], (shipsData, equipsData) => ({
+    TP: getTransportPoint(shipsData, equipsData),
+  }))
 )
