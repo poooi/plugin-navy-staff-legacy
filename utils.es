@@ -17,8 +17,9 @@ const TPByItem = {
   150: 1, // 秋刀魚の缶詰
 }
 
+// note that as light cruiser she inherits 2 pts, making a total of 10 pts
 const TPByShip = {
-  487: 5, // 鬼怒改二
+  487: 8, // 鬼怒改二
 }
 
 const TPByShipType = {
