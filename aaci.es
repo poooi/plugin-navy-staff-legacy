@@ -1,91 +1,61 @@
-/*
+// ported from KC3kai's AACI module
+// url: https://github.com/KC3Kai/KC3Kai/blob/master/src/library/modules/AntiAir.js
+// commit a9edbe5
+// in thankful acknowledgment of their hard work
+// some variable and function naming are modified
 
-AntiAir: anti-air related calculations
+// check for $slotitemtypes
+const itemTypeIs = n => equip => equip.api_type[2] === n
 
-- variable naming convention:
-  - fleetObj: instance of KC3Fleet
-  - shipObj: instance of KC3Ship
-    - mst: master data of either ship or gear
-    - pred: predicates, a function that accepts a single parameter and returns a boolean value
-    - predXXX: predicate combinators. "predXXX(pred1, pred2, ...)" combines pred1, pred2, ...
-          in some specific way to produce a new prediate.
-
-- module contents:
-  - shipProportionalShotdownRate(shipObj)
-    returns a value (supposed to be 0 <= v <= 1) indicating the rate of planes
-    being shot down. note that it might be possible for this value to exceed 1.0.
-  - shipProportionalShotdown(shipObj, num)
-    same as "shipProportionalShotdownRate", except that this one calculates
-    the number of planes being shotdown with slot capacity is given by "num".
-  - shipFixedShotdown(shipObj, fleetObj, formationModifier, [K])
-    returns an integer indicating how many planes will be shotdown.
-    "formationModifier" takes one of: 1/1.2/1.6 depending on formation
-    (see "getFormationModifiers" for detail).
-    K (defaults to 1) is optional, depending on whether AACI is triggered and
-    which kind of AACI is triggered.
-  - shipFixedShotdownRange(shipObj, fleetObj, formationModifier)
-    like "shipFixedShotdown" but this one returns a range by considering
-    all possible AACIs "shipObj" can perform and use the largest modifier as upper bound.
-  - shipFixedShotdownRangeWithAACI(shipObj, fleetObj, formationModifier)
-    the same as "shipFixedShotdownRange" except returning the AACI ID of largest modifier.
-  - shipMaxShotdownAllBonuses(shipObj)
-    return the largest fixed and with modifier bonuses of all possible AACIs "shipObj" can perform.
-  - getShipAvaliableAACIs(shipObj) / fleetPossibleAACIs(fleetObj)
-    returns a list of possible AACI API Ids that ship / fleet could perform.
-  - getShipAllPossibleAACIs(mst)
-    returns a list of possible AACI API Ids that type of ship could perform ignored equipments.
-  - sortedPossibleAaciList(aaciIdList)
-    return a list of AACI object sorted by shot down bonus descended.
-  - AACITable[<AACI API>] returns a record of AACI info:
-    - id: AACI API Id
-    - fixed: fixed shotdown bonus
-    - modifier: the "K" value to "shipFixedShotdown" when this AACI is triggered
-    - icon: IDs of icons representing this kind of AACI
-    - predicateShipMst: test whether "mst" can perform this kind of AACI ingoring equipments
-    - predicateShipObj: test whether "shipObj" can perform this particular kind of AACI
-  - other not explicitly listed contents are for debugging or internal use only.
-
- */
-
-const categoryIs = n => equip => equip.api_type[2] === n
-
+// type for slot item
 const iconIs = n => equip => equip.api_type[3] === n
 
-// all types of Radar (12 for small, 13 for large)
-const isRadar = equip => categoryIs(12)(equip) || categoryIs(13)(equip)
+// 12: 小型電探
+// 13: 大型電探
+const isRadar = equip => itemTypeIs(12)(equip) || itemTypeIs(13)(equip)
 
 // ValidAny(f,g...)(x) = f(x) || g(x) || ...
 const ValidAny = (...func) => x => func.some(f => f(x))
 
+// ValidAll(f,g...)(x) = f(x) && g(x) && ...
 const validAll = (...func) => x => func.every(f => f(x))
-
-const predNot = f => x => !f(x)
 
 // AA Radar
 // Surface Radar are excluded by checking whether
 // the equipment gives AA stat (api_tyku)
 const isAARadar = equip => isRadar(equip) && equip.api_tyku > 0
 
-// AAFD: check by category (36)
-const isAAFD = categoryIs(36)
+// 36: 高射装置 Anti-aircraft Fire Director
+const isAAFD = itemTypeIs(36)
 
-// High-angle mounts: check by icon (16)
+// icon=16: 高角砲
 const isHighAngleMount = iconIs(16)
 
-// Type 3 Shell
-const isType3Shell = categoryIs(18)
+// 18: 対空強化弾
+const isType3Shell = itemTypeIs(18)
 
-// Anti-air gun includes machine guns and rocket launchers
-const isAAGun = categoryIs(21)
+// 21: 対空機銃
+const isAAGun = itemTypeIs(21)
 
+// icon=1: 小口径主砲
+// icon=2: 中口径主砲
+// icon=3: 大口径主砲
 const isRedGun = iconIs(1) || iconIs(2) || iconIs(3)
 
+// icon=4: 副砲
 const isYellowGun = iconIs(4)
-const isFighter = categoryIs(6)
-const isDiveBomber = categoryIs(7)
-const isSeaplaneRecon = categoryIs(10)
 
-const isLargeCaliberMainGun = categoryIs(3)
+// 6: 艦上戦闘機
+const isFighter = itemTypeIs(6)
+
+// 7: 艦上爆撃機
+const isDiveBomber = itemTypeIs(7)
+
+// 10: 水上偵察機
+const isSeaplaneRecon = itemTypeIs(10)
+
+// 3: 大口径主砲
+const isLargeCaliberMainGun = itemTypeIs(3)
 
 // 122: 10cm連装高角砲+高射装置
 // 130: 12.7cm高角砲+高射装置
@@ -183,7 +153,7 @@ const getFleetImprovementModifier = (equip) => {
   return 0
 }
 
-const calcEquipmentAADefense = (equip, forFleet) => {
+const getEquipmentAADefense = (equip, forFleet) => {
   const eTypMod = forFleet
       ? getFleetEquipmentModifier(equip)
       : getShipEquipmentModifier(equip)
@@ -194,9 +164,8 @@ const calcEquipmentAADefense = (equip, forFleet) => {
   return (eTypMod * aaStat) + (eImproveMod * Math.sqrt(equip.api_level))
 }
 
-// Maybe we don't need
 // returns a special floor function f(x) = q * floor( x / q )
-// - q = 1 if shipObj equips nothing
+// - q = 1 if ship equips nothing
 // - q = 2 otherwise
 const specialFloor = (ship) => {
   const q = (ship.api_slot || []).some(id => id !== -1) ? 2 : 1
@@ -204,16 +173,18 @@ const specialFloor = (ship) => {
 }
 
 const shipEquipmentAntiAir = (equips, forFleet) =>
-  equips.reduce((curAA, equip) => curAA + calcEquipmentAADefense(equip, forFleet), 0)
+  equips.reduce((curAA, equip) => curAA + getEquipmentAADefense(equip, forFleet), 0)
 
-
+// A_base
 const shipBaseAntiAir = ship =>
   ((ship.api_tyku || [])[0] || 0) + (ship.api_kyouka[2] || 0)
 
-const shipAdjustedAntiAir = ship =>
+// ^A
+export const shipAdjustedAntiAir = ship =>
   shipBaseAntiAir(ship) + shipEquipmentAntiAir(ship, false)
 
-const shipProportionalShotdownRate = (ship) => {
+// S_proportial
+export const shipProportionalShotdownRate = (ship) => {
   const floor = specialFloor(ship)
   const adjustedAA = shipAdjustedAntiAir(ship)
   return floor(adjustedAA) / 400
@@ -222,6 +193,7 @@ const shipProportionalShotdownRate = (ship) => {
 export const shipProportionalShotdown = (ship, num) =>
   Math.floor(shipProportionalShotdownRate(ship) * num)
 
+// 1=単縦陣, 2=複縦陣, 3=輪形陣, 4=梯形陣, 5=単横陣, 11-14=第n警戒航行序列
 const formationMidifiers = {
   1: 1.0,
   2: 1.2,
@@ -240,23 +212,15 @@ const formationMidifiers = {
 
 export const getFormationModifiers = id => formationMidifiers[id] || NaN
 
-// function getFormationModifiers(id) {
-//   return (id === 1 || id === 4 || id === 5) ? 1.0  // line ahead / echelon / line abreast
-//     : (id === 2) ? 1.2 // double line
-//       : (id === 3) ? 1.6 // diamond
-//         : (id === 11 || id === 21) ? 1.1 // Combined anti-sub
-//           : (id === 12 || id === 14 || id === 22 || id === 24) ? 1.0 // Combined forward / battle
-//             : (id === 13 || id === 23) ? 1.5 // Combined diamond
-//               : NaN // NaN for indicating an invalid id
-// }
-
-const fleetAdjustedAntiAir = (ships, formationModifier) => {
+// ^F
+export const fleetAdjustedAntiAir = (ships, formationModifier) => {
   const allShipEquipmentAA = ships.reduce((curAA, ship) =>
     curAA + shipEquipmentAntiAir(ship, true), 0)
   return (2 / 1.3) * Math.floor(formationModifier * allShipEquipmentAA)
 }
 
-export const fleetCombinedAdjustedAntiAir = (mainShips, escortShips, formationModifier) => {
+// ^F for combined fleet
+export const combinedFleetAdjustedAntiAir = (mainShips, escortShips, formationModifier) => {
   const mainAllShipEquipmentAA = mainShips.reduce((curAA, ship) =>
     curAA + shipEquipmentAntiAir(ship, true), 0)
   const escortAllShipEquipmentAA = escortShips.reduce((curAA, ship) =>
@@ -265,12 +229,14 @@ export const fleetCombinedAdjustedAntiAir = (mainShips, escortShips, formationMo
     Math.floor(formationModifier * (mainAllShipEquipmentAA + escortAllShipEquipmentAA))
 }
 
+// S_fixed
 // K: AACI modifier, default to 1
-const shipFixedShotdown = (ship, fleetShips, formationModifier, K = 1) => {
+// C: Combined Fleet modifier, default to 1, main fleet = 0.72, escort fleet = 0.48
+const shipFixedShotdown = (ship, fleetShips, formationModifier, K = 1, C = 1) => {
   const floor = specialFloor(ship)
   const adjustedAA = shipAdjustedAntiAir(ship)
   return Math.floor(((floor(adjustedAA) +
-    Math.floor(fleetAdjustedAntiAir(fleetShips, formationModifier))) * K) / 10)
+    Math.floor(fleetAdjustedAntiAir(fleetShips, formationModifier))) * K * C) / 10)
 }
 
 // avoid modifying this structure directly, use "declareAACI" instead.
@@ -530,7 +496,7 @@ declareAACI({
   modifier: 1.45,
   shipValid: isKinuK2,
   equipsValid: validAll(
-    predNot(hasSome(isBuiltinHighAngleMount)),
+    !hasSome(isBuiltinHighAngleMount),
     hasSome(isHighAngleMount),
     hasSome(isCDMG)
   ),
@@ -546,28 +512,25 @@ declareAACI({
   ),
 })
 
-
-// return a list of possible AACI APIs based on ship and her equipments
-// - returns a list of **strings**, not numbers
-//   (since object keys has to be strings, and AACITable[key] accepts keys
-//   of both number and string anyway)
-// - because of the game mechanism, some AACI API Ids returned might be overlapped
-//   and never triggered, "possibleAACIs" is **not** responsible for removing never-triggered
-//   AACI from resulting list.
+// return a list of AACIs that meet the requirement of ship and equipmenmt
 export const getShipAvaliableAACIs = (ship, equips) =>
-  Object.keys(AACITable).filter((key) => {
+  Object.keys(AACITable)
+  .filter((key) => {
     const type = AACITable[key]
     return type.shipValid(ship) && type.equipsValid(equips)
   })
+  .map(key => Number(key))
 
-// return a list of all possible AACI based on master ship only, equipments ignored
+// return a list of all possible AACIs for the ship herself
 export const getShipAllAACIs = ship =>
-  Object.keys(AACITable).filter((key) => {
+  Object.keys(AACITable)
+  .filter((key) => {
     const type = AACITable[key]
     return type.shipValid(ship)
   })
+  .map(key => Number(key))
 
-// return a list of unduplicated possible AACI APIs based on all ships in fleet
+// return a list of unduplicated available AACIs based on all ships in fleet
 export const fleetPossibleAACIs = (ships, equips) => {
   const aaciSet = {}
   ships.forEach((ship, index) => {
@@ -575,13 +538,13 @@ export const fleetPossibleAACIs = (ships, equips) => {
       aaciSet[id] = true
     })
   })
-  return Object.keys(aaciSet)
+  return Object.keys(aaciSet).map(key => Number(key))
 }
 
 // return: a list of sorted AACI objects order by effect desc,
 //   as most effective AACI gets priority to be triggered.
 // param: AACI IDs from possibleAACIs functions
-// param: a optional callback function to customize ordering
+// param: a optional sorting callback to customize ordering
 const sortedPossibleAaciList = (aaciIds,
   sortCallback = (a, b) => b.fixed - a.fixed || b.modifier - a.modifier) => {
   let aaciList = []
@@ -596,7 +559,7 @@ const sortedPossibleAaciList = (aaciIds,
   return aaciList
 }
 
-// Order by (API) id desc
+// Order by AACI id desc
 export const sortedFleetPossibleAaciList = triggeredShipAaciIds =>
    sortedPossibleAaciList(triggeredShipAaciIds, (a, b) => b.id - a.id)
 
@@ -627,7 +590,7 @@ export const shipFixedShotdownRangeWithAACI = (ship, ships, equips, formationMod
   ])
 }
 
-export const shipMaxShotdownFixedBonus = (ship) => {
+export const shipMaxShotdownFixed = (ship) => {
   const possibleBonuses = getShipAvaliableAACIs(ship).map(apiId => AACITable[apiId].fixed)
   // default value 0 is always available, making call to Math.max always non-empty
   possibleBonuses.push(0)
