@@ -3,6 +3,7 @@ import { createSelector } from 'reselect'
 import { stateSelector, equipDataSelectorFactory, fleetShipsDataSelectorFactory, fleetShipsEquipDataSelectorFactory } from 'views/utils/selectors'
 
 import { getTransportPoint } from './utils'
+import { getFleetAvailableAACIs } from './aaci'
 
 // airbase: Array of all squadrons of all maps
 // squadron index is never guaranteed
@@ -42,11 +43,32 @@ export const squadronDataSelectorFactory = memoize(index =>
   ], (squad, [_equip, $equip]) => [squad, _equip, $equip])
 )
 
-export const fleetInfoSelectorFactory = memoize(fleetId =>
+const normalizedFleetShipsDataSelectorFactory = memoize(fleetId =>
   createSelector([
     fleetShipsDataSelectorFactory(fleetId),
+  ], shipsData =>
+    shipsData.filter(([_ship, $ship]) => !!_ship && !!$ship)
+    .map(([_ship, $ship]) => ({ ...$ship, ..._ship }))
+  )
+)
+
+const normalizedFleetShipsEquipDataSelectorFactory = memoize(fleetId =>
+  createSelector([
     fleetShipsEquipDataSelectorFactory(fleetId),
+  ], equipsData =>
+    equipsData.map(equipData =>
+      equipData.filter(([_equip, $equip, onslot] = []) => !!_equip && !!$equip)
+      .map(([_equip, $equip, onslot]) => ([{ ...$equip, ..._equip }, onslot]))
+    )
+  )
+)
+
+export const fleetInfoSelectorFactory = memoize(fleetId =>
+  createSelector([
+    normalizedFleetShipsDataSelectorFactory(fleetId),
+    normalizedFleetShipsEquipDataSelectorFactory(fleetId),
   ], (shipsData, equipsData) => ({
     TP: getTransportPoint(shipsData, equipsData),
+    AACIs: getFleetAvailableAACIs(shipsData, equipsData),
   }))
 )
