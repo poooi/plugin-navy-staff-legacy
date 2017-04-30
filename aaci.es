@@ -16,10 +16,10 @@ const iconIs = n => equip => equip.api_type[3] === n
 // 13: 大型電探
 const isRadar = equip => itemTypeIs(12)(equip) || itemTypeIs(13)(equip)
 
-// ValidAny(f,g...)(x) = f(x) || g(x) || ...
-const ValidAny = (...func) => x => func.some(f => f(x))
+// validAny(f,g...)(x) = f(x) || g(x) || ...
+const validAny = (...func) => x => func.some(f => f(x))
 
-// ValidAll(f,g...)(x) = f(x) && g(x) && ...
+// validAll(f,g...)(x) = f(x) && g(x) && ...
 const validAll = (...func) => x => func.every(f => f(x))
 
 // AA Radar
@@ -112,7 +112,7 @@ const getFleetEquipmentModifier = (equip) => {
   if (isHighAngleMount(equip) || isAAFD(equip)) {
     return 0.35
   }
-  if (ValidAny(isRedGun,
+  if (validAny(isRedGun,
     isYellowGun,
     isAAGun,
     isFighter,
@@ -263,18 +263,18 @@ const isNotSubmarine = ship => ![13, 14].includes(ship.api_stype)
 
 const isBattleship = ship => [8, 9, 10].includes(ship.api_stype)
 
-// 421,330: 秋月
+// 421, 330: 秋月
 // 422, 346: 照月
 // 423, 357: 初月
 const isAkizukiClass = ship => [421, 330, 422, 346, 423, 357].includes(ship.api_ship_id)
 
-const shipIdEq = n => ship => ship.api_ship_id === n
+const shipIdIs = n => ship => ship.api_ship_id === n
 
-const isMayaK2 = shipIdEq(428)
-const isIsuzuK2 = shipIdEq(141)
-const isKasumiK2B = shipIdEq(470)
-const isSatsukiK2 = shipIdEq(418)
-const isKinuK2 = shipIdEq(487)
+const isMayaK2 = shipIdIs(428)
+const isIsuzuK2 = shipIdIs(141)
+const isKasumiK2B = shipIdIs(470)
+const isSatsukiK2 = shipIdIs(418)
+const isKinuK2 = shipIdIs(487)
 
 // "hasAtLeast(pred)(n)(xs)" is the same as:
 // xs.filter(pred).length >= n
