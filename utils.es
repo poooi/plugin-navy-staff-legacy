@@ -36,18 +36,18 @@ const TPByShipType = {
   20: 7, // 潜水母艦
 }
 
-// shipsData: fleetShipsDataSelectorFactory
-// equipsData: fleetShipsEquipDataSelectorFactory
+// ships: [[_ship, $ship] for ship in fleet]
+// equips: [[[_equip, $equip] for equip on ship] for ship in fleet]
 export const getTransportPoint = (shipsData, equipsData) => {
   let TP = 0
-  shipsData.forEach(([_ship = {}, $ship = {}]) => {
-    TP += TPByShipType[$ship.api_stype] || 0
-    TP += TPByShip[$ship.api_id] || 0
+  shipsData.forEach((ship) => {
+    TP += TPByShipType[ship.api_stype] || 0
+    TP += TPByShip[ship.api_ship_id] || 0
   })
 
   equipsData.forEach((equipData) => {
-    equipData.forEach(([_equip, $equip = {}, _] = []) => {
-      TP += TPByItem[$equip.api_id] || 0
+    equipData.forEach(([equip, _] = []) => {
+      TP += TPByItem[equip.api_slotitem_id] || 0
     })
   })
 
