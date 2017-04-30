@@ -1,9 +1,12 @@
 import memoize from 'fast-memoize'
 import { createSelector } from 'reselect'
-import { stateSelector, equipDataSelectorFactory, fleetShipsDataSelectorFactory, fleetShipsEquipDataSelectorFactory } from 'views/utils/selectors'
+import { stateSelector, equipDataSelectorFactory,
+  shipDataSelectorFactory, shipEquipDataSelectorFactory,
+  fleetShipsDataSelectorFactory, fleetShipsEquipDataSelectorFactory } from 'views/utils/selectors'
 
 import { getTransportPoint } from './utils'
-import { getFleetAvailableAACIs } from './aaci'
+import { getFleetAvailableAACIs, getShipAvaliableAACIs, getShipAllAACIs, getShipAACIs } from './aaci'
+import { isOASW } from './oasw'
 
 // airbase: Array of all squadrons of all maps
 // squadron index is never guaranteed
@@ -71,4 +74,31 @@ export const fleetInfoSelectorFactory = memoize(fleetId =>
     TP: getTransportPoint(shipsData, equipsData),
     AACIs: getFleetAvailableAACIs(shipsData, equipsData),
   }))
+)
+
+
+export const shipInfoSelectorFactory = memoize(shipId =>
+  createSelector([
+    shipDataSelectorFactory(shipId),
+    shipEquipDataSelectorFactory(shipId),
+  ], ([_ship, $ship], _equips) => {
+    const ship = { ...$ship, ..._ship }
+    const equips = _equips.filter(([_equip, $equip, onslot] = []) => !!_equip && !!$equip)
+                          .map(([_equip, $equip, onslot]) => ({ ...$equip, ..._equip }))
+
+    const onslots = _equips.filter(([_equip, $equip, onslot] = []) => !!_equip && !!$equip)
+                           .map(([_equip, $equip, onslot]) => onslot)
+    console.log(ship, equips)
+    return ({
+      AACI: {
+        availableAACIs: getShipAvaliableAACIs(ship, equips),
+        allAACIs: getShipAllAACIs(ship),
+        AACIs: getShipAACIs(ship, equips),
+      },
+      isOASW: isOASW(ship, equips),
+      ship,
+      equips,
+      onslots,
+    })
+  })
 )

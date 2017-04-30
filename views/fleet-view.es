@@ -3,22 +3,7 @@ import { connect } from 'react-redux'
 import { shipDataSelectorFactory, fleetShipsIdSelectorFactory } from 'views/utils/selectors'
 
 import FleetInfo from './fleet-info'
-
-const ShipView = connect(
-  (state, props) => {
-    const { shipId } = props
-    const [ship, $ship] = shipDataSelectorFactory(shipId)(state) || []
-    return ({
-      ship,
-      $ship,
-    })
-  }
-)(({ ship, $ship }) => (
-  <div>
-    { $ship.api_name }
-  </div>
-  )
-)
+import ShipView from './ship-view'
 
 const FleetView = connect(
   (state, props) => {

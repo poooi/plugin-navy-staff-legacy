@@ -1,0 +1,39 @@
+#navy-staff {
+  padding: 20px 10px 0 10px;
+}
+#navy-staff .fleet-name-button {
+  display: flex;
+}
+#navy-staff .fleet-name-button > button {
+  flex: 1;
+}
+#navy-staff .fleet-info {
+  border: 0px;
+  margin-bottom: 1em;
+}
+#navy-staff .fleet-info .panel-body {
+  padding: 5px;
+  display: flex;
+}
+#navy-staff .fleet-info .panel-body > div {
+  flex: 1;
+  text-align: center;
+}
+#navy-staff .ship-view {
+  display: flex;
+  padding: .5ex 0;
+}
+#navy-staff .ship-name {
+  flex: 0;
+  margin-right: 3em;
+  font-size: 120%;
+  min-width: 5em;
+}
+#navy-staff .ship-info {
+  flex: 1;
+  display: flex;
+}
+#navy-staff .ship-info > div {
+  flex: 1;
+  text-align: center;
+}

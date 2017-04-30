@@ -1,6 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { Panel, OverlayTrigger, Tooltip } from 'react-bootstrap'
+import { Panel, OverlayTrigger, Tooltip, Label, Badge } from 'react-bootstrap'
+import { get } from 'lodash'
 
 import { fleetInfoSelectorFactory } from '../selectors'
 import { AACITable } from '../aaci'
@@ -18,36 +19,55 @@ const FleetInfo = connect(
     </Tooltip>
   )
   const AACITooltip = (
-    <Tooltip id="staff-TP-tooptip">
+    <Tooltip id="staff-TP-tooptip" className="info-tooltip">
+      <div className="info-tooltip-entry">
+        <span className="info-tooltip-item">
+          AACI Type
+        </span>
+        <span>
+          Shotdown
+        </span>
+      </div>
       {
         AACIs.map(id =>
-          <span key={id}>
-            {`type: ${id}`}
-          </span>
+          <div key={id} className="info-tooltip-entry">
+            <span className="info-tooltip-item">
+              <Label bsStyle="success">
+                {`${id}${get(AACITable, `${id}.name.length`, 0) > 0 ? ` - ${AACITable[id].name}` : ''}`}
+              </Label>
+            </span>
+            <span>
+              {(AACITable[id] || {}).fixed}
+            </span>
+          </div>
         )
       }
     </Tooltip>
   )
   return (
-    <Panel>
-      <OverlayTrigger
-        overlay={TPTooltip}
-        placement="bottom"
-      >
-        <span>{`TP: ${TP}`}</span>
-      </OverlayTrigger>
-      {
-        AACIs.length > 0
-        ?
-          <OverlayTrigger
-            overlay={AACITooltip}
-            placement="bottom"
-          >
-            <span>AACI on</span>
-          </OverlayTrigger>
-        :
-          <span>AACI off</span>
-      }
+    <Panel className="fleet-info">
+      <div>
+        <OverlayTrigger
+          overlay={TPTooltip}
+          placement="bottom"
+        >
+          <span>{`TP: ${TP}`}</span>
+        </OverlayTrigger>
+      </div>
+      <div>
+        {
+          AACIs.length > 0
+          ?
+            <OverlayTrigger
+              overlay={AACITooltip}
+              placement="bottom"
+            >
+              <span>AACI on</span>
+            </OverlayTrigger>
+          :
+            <span>AACI off</span>
+        }
+      </div>
     </Panel>
   )
 })
