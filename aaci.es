@@ -4,6 +4,8 @@
 // in thankful acknowledgment of their hard work
 // some variable and function naming are modified
 
+import { maxBy } from 'lodash'
+
 // check for $slotitemtypes
 const itemTypeIs = n => equip => equip.api_type[2] === n
 
@@ -305,7 +307,7 @@ declareAACI({
   shipValid: validAll(isNotSubmarine, slotNumAtLeast(3)),
   equipsValid: validAll(
     hasSome(isBuiltinHighAngleMount),
-    hasSome(isAARadar),
+    hasSome(isAAFD),
     hasSome(isAARadar)
   ),
 })
@@ -512,7 +514,31 @@ declareAACI({
   ),
 })
 
+// return: a list of sorted AACI objects order by effect desc,
+//   as most effective AACI gets priority to be triggered.
+// param: AACI IDs from possibleAACIs functions
+// param: a optional sorting callback to customize ordering
+const sortAaciIds = (aaciIds,
+  sortCallback = (a, b) => b.fixed - a.fixed || b.modifier - a.modifier) => {
+  let aaciList = []
+  if (!!aaciIds && Array.isArray(aaciIds)) {
+    aaciIds.forEach((id) => {
+      if (AACITable[id]) {
+        aaciList.push(AACITable[id])
+      }
+    })
+    aaciList = aaciList.sort(sortCallback)
+  }
+  return aaciList
+}
+
+// Order by AACI id desc
+export const sortFleetPossibleAaciList = triggeredShipAaciIds =>
+   sortAaciIds(triggeredShipAaciIds, (a, b) => b.id - a.id)
+
 // return a list of AACIs that meet the requirement of ship and equipmenmt
+// ship: ship
+// equips: [[equip, onslot] for equip on ship]
 export const getShipAvaliableAACIs = (ship, equips) =>
   Object.keys(AACITable)
   .filter((key) => {
@@ -530,41 +556,49 @@ export const getShipAllAACIs = ship =>
   })
   .map(key => Number(key))
 
+// return the AACIs to trigger for a ship, it will be array due to exceptions
+const getShipAACIs = (ship, equips) => {
+  const AACIs = getShipAvaliableAACIs(ship, equips)
+  // Kinu kai 2 exception
+  if (AACIs.includes(20)) {
+    return [20]
+  }
+  const maxFixed = maxBy(AACIs, id => (AACITable[id] || {}).fixed || 0) || 0
+  if (maxFixed === 8 && AACIs.includes(7)) {
+    return [7, 8]
+  }
+  return [maxFixed]
+}
+
+
 // return a list of unduplicated available AACIs based on all ships in fleet
-export const fleetPossibleAACIs = (ships, equips) => {
+// ships: [ ship for ship in fleet]
+// equips: [[[equip, onslot] for equip on ship] for ship in fleet]
+export const getFleetPossibleAACIs = (ships, equips) => {
   const aaciSet = {}
   ships.forEach((ship, index) => {
-    getShipAvaliableAACIs(ship, equips[index]).forEach((id) => {
+    getShipAvaliableAACIs(ship, equips[index].map(([equip, onslot]) => equip)).forEach((id) => {
       aaciSet[id] = true
     })
   })
   return Object.keys(aaciSet).map(key => Number(key))
 }
 
-// return: a list of sorted AACI objects order by effect desc,
-//   as most effective AACI gets priority to be triggered.
-// param: AACI IDs from possibleAACIs functions
-// param: a optional sorting callback to customize ordering
-const sortedPossibleAaciList = (aaciIds,
-  sortCallback = (a, b) => b.fixed - a.fixed || b.modifier - a.modifier) => {
-  let aaciList = []
-  if (!!aaciIds && Array.isArray(aaciIds)) {
-    aaciIds.forEach((id) => {
-      if (AACITable[id]) {
-        aaciList.push(AACITable[id])
+// collections of AACIs to trigger of each ship
+export const getFleetAvailableAACIs = (ships, equips) => {
+  const aaciSet = {}
+  ships.forEach((ship, index) => {
+    getShipAACIs(ship, equips[index].map(([equip, onslot]) => equip)).forEach((id) => {
+      if (id > 0) {
+        aaciSet[id] = true
       }
     })
-    aaciList = aaciList.sort(sortCallback)
-  }
-  return aaciList
+  })
+  return Object.keys(aaciSet).map(key => Number(key))
 }
 
-// Order by AACI id desc
-export const sortedFleetPossibleAaciList = triggeredShipAaciIds =>
-   sortedPossibleAaciList(triggeredShipAaciIds, (a, b) => b.id - a.id)
-
 export const shipFixedShotdownRange = (ship, ships, equips, formationModifier) => {
-  const possibleAACIModifiers = fleetPossibleAACIs(ships, equips)
+  const possibleAACIModifiers = getFleetAvailableAACIs(ships, equips)
     .map(apiId => AACITable[apiId].modifier)
   // default value 1 is always available, making call to Math.max always non-empty
   possibleAACIModifiers.push(1)
@@ -577,7 +611,7 @@ export const shipFixedShotdownRange = (ship, ships, equips, formationModifier) =
 }
 
 export const shipFixedShotdownRangeWithAACI = (ship, ships, equips, formationModifier) => {
-  const possibleAaciList = sortedPossibleAaciList(fleetPossibleAACIs(ships, equips),
+  const possibleAaciList = sortAaciIds(getFleetAvailableAACIs(ships, equips),
     (a, b) => // Order by modifier desc, fixed desc, icons[0] desc
       b.modifier - a.modifier
       || b.fixed - a.fixed || b.icons[0] - a.icons[0])
@@ -598,7 +632,7 @@ export const shipMaxShotdownFixed = (ship) => {
 }
 
 export const shipMaxShotdownAllBonuses = (ship) => {
-  const possibleAaciList = sortedPossibleAaciList(getShipAvaliableAACIs(ship))
+  const possibleAaciList = sortAaciIds(getShipAvaliableAACIs(ship))
   return possibleAaciList.length > 0 ?
     [possibleAaciList[0].id, possibleAaciList[0].fixed, possibleAaciList[0].modifier]
     : [0, 0, 1]
