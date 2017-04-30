@@ -22,6 +22,8 @@ const validAny = (...func) => x => func.some(f => f(x))
 // validAll(f,g...)(x) = f(x) && g(x) && ...
 const validAll = (...func) => x => func.every(f => f(x))
 
+const validNot = f => x => !f(x)
+
 // AA Radar
 // Surface Radar are excluded by checking whether
 // the equipment gives AA stat (api_tyku)
@@ -249,8 +251,9 @@ export const AACITable = {}
 // predicateShipObj is a function f: f(shipObj)
 // returns a boolean to indicate whether the ship in question (with equipments)
 // is capable of performing such type of AACI
-const declareAACI = ({ id, fixed, modifier, shipValid, equipsValid }) => {
+const declareAACI = ({ name, id, fixed, modifier, shipValid, equipsValid }) => {
   AACITable[id] = {
+    name: name || '',
     id,
     fixed,
     modifier,
@@ -349,6 +352,7 @@ declareAACI({
 
 // *** BattleShip
 declareAACI({
+  name: 'Battle Ship',
   id: 4,
   fixed: 6,
   modifier: 1.4,
@@ -362,6 +366,7 @@ declareAACI({
 })
 
 declareAACI({
+  name: 'Battle Ship',
   id: 6,
   fixed: 4,
   modifier: 1.45,
@@ -376,6 +381,7 @@ declareAACI({
 
 // *** Akizuki-class AACIs
 declareAACI({
+  name: 'Akitsuki Class',
   id: 1,
   fixed: 7,
   modifier: 1.7,
@@ -387,6 +393,7 @@ declareAACI({
 })
 
 declareAACI({
+  name: 'Akitsuki Class',
   id: 2,
   fixed: 6,
   modifier: 1.7,
@@ -398,6 +405,7 @@ declareAACI({
 })
 
 declareAACI({
+  name: 'Akitsuki Class',
   id: 3,
   fixed: 4,
   modifier: 1.6,
@@ -409,6 +417,7 @@ declareAACI({
 
 // *** Maya K2
 declareAACI({
+  name: 'Maya Kai 2',
   id: 10,
   fixed: 8,
   modifier: 1.65,
@@ -421,6 +430,7 @@ declareAACI({
 })
 
 declareAACI({
+  name: 'Maya Kai 2',
   id: 11,
   fixed: 6,
   modifier: 1.5,
@@ -433,6 +443,7 @@ declareAACI({
 
 // *** Isuzu K2
 declareAACI({
+  name: 'Isuzu Kai 2',
   id: 14,
   fixed: 4,
   modifier: 1.45,
@@ -445,6 +456,7 @@ declareAACI({
 })
 
 declareAACI({
+  name: 'Isuzu Kai 2',
   id: 15,
   fixed: 3,
   modifier: 1.3,
@@ -457,6 +469,7 @@ declareAACI({
 
 // *** Kasumi K2B
 declareAACI({
+  name: 'Kasumi Kai 2 B',
   id: 16,
   fixed: 4,
   modifier: 1.4,
@@ -469,6 +482,7 @@ declareAACI({
 })
 
 declareAACI({
+  name: 'Kasumi Kai 2 B',
   id: 17,
   fixed: 2,
   modifier: 1.25,
@@ -481,6 +495,7 @@ declareAACI({
 
 // *** Satsuki K2
 declareAACI({
+  name: 'Satruki Kai 2',
   id: 18,
   fixed: 2,
   modifier: 1.2,
@@ -493,18 +508,20 @@ declareAACI({
 // *** Kinu K2
 // any HA with builtin AAFD will not work
 declareAACI({
+  name: 'Kinu Kai 2',
   id: 19,
   fixed: 5,
   modifier: 1.45,
   shipValid: isKinuK2,
   equipsValid: validAll(
-    !hasSome(isBuiltinHighAngleMount),
+    validNot(hasSome(isBuiltinHighAngleMount)),
     hasSome(isHighAngleMount),
     hasSome(isCDMG)
   ),
 })
 
 declareAACI({
+  name: 'Kinu Kai 2',
   id: 20,
   fixed: 3,
   modifier: 1.25,
@@ -557,7 +574,7 @@ export const getShipAllAACIs = ship =>
   .map(key => Number(key))
 
 // return the AACIs to trigger for a ship, it will be array due to exceptions
-const getShipAACIs = (ship, equips) => {
+export const getShipAACIs = (ship, equips) => {
   const AACIs = getShipAvaliableAACIs(ship, equips)
   // Kinu kai 2 exception
   if (AACIs.includes(20)) {
@@ -567,7 +584,7 @@ const getShipAACIs = (ship, equips) => {
   if (maxFixed === 8 && AACIs.includes(7)) {
     return [7, 8]
   }
-  return [maxFixed]
+  return maxFixed ? [maxFixed] : []
 }
 
 
@@ -589,9 +606,7 @@ export const getFleetAvailableAACIs = (ships, equips) => {
   const aaciSet = {}
   ships.forEach((ship, index) => {
     getShipAACIs(ship, equips[index].map(([equip, onslot]) => equip)).forEach((id) => {
-      if (id > 0) {
-        aaciSet[id] = true
-      }
+      aaciSet[id] = true
     })
   })
   return Object.keys(aaciSet).map(key => Number(key))
