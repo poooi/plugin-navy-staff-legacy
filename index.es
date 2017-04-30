@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { createSelector } from 'reselect'
 import { memoize, get } from 'lodash'
 import { Button, ButtonGroup } from 'react-bootstrap'
+import { join } from 'path'
 
 import {
   fleetNameSelectorFactory,
@@ -83,6 +84,7 @@ const NavyStaff = connect(
     const { activeId } = this.state
     return (
       <div id="navy-staff">
+        <link rel="stylesheet" href={join(__dirname, 'assets', 'style.css')} />
         <ButtonGroup className="fleet-name-button">
           {
             [0, 1, 2, 3].map(i =>
@@ -95,15 +97,13 @@ const NavyStaff = connect(
               />
             )
           }
-          {
-            <Button
-              bsSize="small"
-              onClick={this.handleClick(4)}
-              className={activeId === 4 ? 'active' : ''}
-            >
-              Land Base
-            </Button>
-          }
+          <Button
+            bsSize="small"
+            onClick={this.handleClick(4)}
+            className={activeId === 4 ? 'active' : ''}
+          >
+            Land Base
+          </Button>
         </ButtonGroup>
         {
           activeId < 4 &&
