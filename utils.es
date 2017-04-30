@@ -36,8 +36,8 @@ const TPByShipType = {
   20: 7, // 潜水母艦
 }
 
-// ships: [[_ship, $ship] for ship in fleet]
-// equips: [[[_equip, $equip] for equip on ship] for ship in fleet]
+// ships: [ship for ship in fleet]
+// equips: [[equip for equip on ship] for ship in fleet]
 export const getTransportPoint = (shipsData, equipsData) => {
   let TP = 0
   shipsData.forEach((ship) => {
