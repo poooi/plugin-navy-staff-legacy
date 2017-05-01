@@ -8,9 +8,27 @@ import { join } from 'path'
 import {
   fleetNameSelectorFactory,
   fleetStateSelectorFactory,
+  combinedFleetStateSelector,
 } from 'views/utils/selectors'
 
 import FleetView from './views/fleet-view'
+import { CombinedFleetType } from './utils'
+
+// const { i18n } = window
+// const __ = i18n['poi-plugin-navy-staff'].__.bind(i18n['poi-plugin-navy-staff'])
+
+window.i18n['poi-plugin-navy-staff'] = new (require('i18n-2'))({
+  locales: ['zh-CN', 'zh-TW', 'ja-JP', 'en-US', 'ko-KR'],
+  defaultLocale: 'en-US',
+  directory: join(__dirname, 'i18n'),
+  updateFiles: true,
+  indent: "\t",
+  extension: '.json',
+  devMode: true,
+})
+window.i18n['poi-plugin-navy-staff'].setLocale(window.language)
+
+const __ = window.i18n['poi-plugin-navy-staff'].__.bind(window.i18n['poi-plugin-navy-staff'])
 
 const defaultFleetNames = ['I', 'II', 'III', 'IV']
 
@@ -52,13 +70,31 @@ const ShipViewSwitchButton = connect(
   </Button>
 )
 
+const CombinedFleetViewSwitchButton = connect(
+  state => ({
+    fleetState: combinedFleetStateSelector(state),
+  })
+)(({ fleetId, activeId, fleetName, fleetState, onClick, disabled }) =>
+  <Button
+    bsSize="small"
+    bsStyle={getStyle(fleetState, disabled)}
+    onClick={onClick}
+    disabled={disabled}
+    className={fleetId === activeId ? 'active' : ''}
+  >
+    {fleetName}
+  </Button>
+)
+
 const NavyStaff = connect(
   state => ({
     fleetCount: get(state, 'info.fleets.length', 4),
+    combinedFlag: get(state, 'sortie.combinedFlag'),
   })
 )(class NavyStaff extends Component {
   static propTypes = {
     fleetCount: PropTypes.number.isRequired,
+    combinedFlag: PropTypes.number.isRequired,
   }
 
   defaultProps = {
@@ -80,14 +116,47 @@ const NavyStaff = connect(
   }
 
   render() {
-    const { fleetCount } = this.props
+    const { fleetCount, combinedFlag } = this.props
     const { activeId } = this.state
+
+    let View
+    switch (activeId) {
+      case 12:
+        View = <CombinedFleetView />
+        break
+      case 4:
+        View = <LandBaseView />
+        break
+      default:
+        View = <FleetView fleetId={activeId} />
+    }
+
     return (
       <div id="navy-staff">
         <link rel="stylesheet" href={join(__dirname, 'assets', 'style.css')} />
         <ButtonGroup className="fleet-name-button">
           {
-            [0, 1, 2, 3].map(i =>
+            combinedFlag > 0
+            ?
+              <CombinedFleetViewSwitchButton
+                fleetId={12}
+                onClick={this.handleClick(12)}
+                activeId={activeId}
+                fleetName={__(CombinedFleetType[combinedFlag])}
+              />
+            :
+              [0, 1].map(i =>
+                <ShipViewSwitchButton
+                  key={i}
+                  fleetId={i}
+                  onClick={this.handleClick(i)}
+                  disabled={i + 1 > fleetCount}
+                  activeId={activeId}
+                />
+              )
+          }
+          {
+            [2, 3].map(i =>
               <ShipViewSwitchButton
                 key={i}
                 fleetId={i}
@@ -102,15 +171,10 @@ const NavyStaff = connect(
             onClick={this.handleClick(4)}
             className={activeId === 4 ? 'active' : ''}
           >
-            Land Base
+            {__('Land Base')}
           </Button>
         </ButtonGroup>
-        {
-          activeId < 4 &&
-          <FleetView
-            fleetId={activeId}
-          />
-        }
+        {View}
       </div>
     )
   }

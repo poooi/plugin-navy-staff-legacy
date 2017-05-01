@@ -2,7 +2,8 @@ import memoize from 'fast-memoize'
 import { createSelector } from 'reselect'
 import { stateSelector, equipDataSelectorFactory,
   shipDataSelectorFactory, shipEquipDataSelectorFactory,
-  fleetShipsDataSelectorFactory, fleetShipsEquipDataSelectorFactory } from 'views/utils/selectors'
+  fleetShipsDataSelectorFactory, fleetShipsEquipDataSelectorFactory,
+  fleetStateSelectorFactory } from 'views/utils/selectors'
 
 import { getTransportPoint } from './utils'
 import { getFleetAvailableAACIs, getShipAvaliableAACIs, getShipAllAACIs, getShipAACIs } from './aaci'
@@ -88,7 +89,6 @@ export const shipInfoSelectorFactory = memoize(shipId =>
 
     const onslots = _equips.filter(([_equip, $equip, onslot] = []) => !!_equip && !!$equip)
                            .map(([_equip, $equip, onslot]) => onslot)
-    console.log(ship, equips)
     return ({
       AACI: {
         availableAACIs: getShipAvaliableAACIs(ship, equips),
@@ -102,3 +102,8 @@ export const shipInfoSelectorFactory = memoize(shipId =>
     })
   })
 )
+
+export const combinedFleetStateSelector = createSelector([
+  fleetStateSelectorFactory(0),
+  fleetStateSelectorFactory(1),
+], (state0, state1) => Math.max(state0, state1))

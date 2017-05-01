@@ -53,3 +53,9 @@ export const getTransportPoint = (shipsData, equipsData) => {
 
   return TP
 }
+
+export const combinedFleetType = {
+  1: 'Carrier Task Force', // 空母機動部隊
+  2: 'Surface Task Force', // 水上打撃部隊
+  3: 'Transport Escort', // 輸送護衛部隊
+}
