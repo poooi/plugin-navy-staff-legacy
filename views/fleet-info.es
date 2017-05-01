@@ -2,9 +2,26 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { Panel, OverlayTrigger, Tooltip, Label, Badge } from 'react-bootstrap'
 import { get } from 'lodash'
+import { resolve } from 'path'
 
 import { fleetInfoSelectorFactory } from '../selectors'
 import { AACITable } from '../aaci'
+
+// const { i18n } = window
+// const __ = i18n['poi-plugin-navy-staff'].__.bind(i18n['poi-plugin-navy-staff'])
+
+window.i18n['poi-plugin-navy-staff'] = new (require('i18n-2'))({
+  locales: ['zh-CN', 'zh-TW', 'ja-JP', 'en-US', 'ko-KR'],
+  defaultLocale: 'en-US',
+  directory: resolve(__dirname, '../i18n'),
+  updateFiles: true,
+  indent: "\t",
+  extension: '.json',
+  devMode: true,
+})
+window.i18n['poi-plugin-navy-staff'].setLocale(window.language)
+
+const __ = window.i18n['poi-plugin-navy-staff'].__.bind(window.i18n['poi-plugin-navy-staff'])
 
 const FleetInfo = connect(
   (state, { fleetId }) => ({
@@ -14,7 +31,7 @@ const FleetInfo = connect(
   const TPTooltip = (
     <Tooltip id="staff-TP-tooltip">
       <span>
-        {`A rank: ${Math.floor(TP * 0.7)}`}
+        {`${__('A rank:')} ${Math.floor(TP * 0.7)}`}
       </span>
     </Tooltip>
   )
@@ -22,10 +39,10 @@ const FleetInfo = connect(
     <Tooltip id="staff-TP-tooptip" className="info-tooltip">
       <div className="info-tooltip-entry">
         <span className="info-tooltip-item">
-          AACI Type
+          {__('AACI Type')}
         </span>
         <span>
-          Shotdown
+          {__('Shotdown')}
         </span>
       </div>
       {
@@ -62,10 +79,10 @@ const FleetInfo = connect(
               overlay={AACITooltip}
               placement="bottom"
             >
-              <span>AACI on</span>
+              <Label bsStyle="success">{__('AACI on')}</Label>
             </OverlayTrigger>
           :
-            <span>AACI off</span>
+            <Label bsStyle="default">{__('AACI off')}</Label>
         }
       </div>
     </Panel>

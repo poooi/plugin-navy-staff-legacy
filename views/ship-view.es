@@ -3,18 +3,35 @@ import { connect } from 'react-redux'
 import { OverlayTrigger, Tooltip, Label} from 'react-bootstrap'
 import FA from 'react-fontawesome'
 import { get } from 'lodash'
+import { resolve } from 'path'
 
 import { shipInfoSelectorFactory } from '../selectors'
 import { AACITable } from '../aaci'
+
+// const { i18n } = window
+// const __ = i18n['poi-plugin-navy-staff'].__.bind(i18n['poi-plugin-navy-staff'])
+
+window.i18n['poi-plugin-navy-staff'] = new (require('i18n-2'))({
+  locales: ['zh-CN', 'zh-TW', 'ja-JP', 'en-US', 'ko-KR'],
+  defaultLocale: 'en-US',
+  directory: resolve(__dirname, '../i18n'),
+  updateFiles: true,
+  indent: "\t",
+  extension: '.json',
+  devMode: true,
+})
+window.i18n['poi-plugin-navy-staff'].setLocale(window.language)
+
+const __ = window.i18n['poi-plugin-navy-staff'].__.bind(window.i18n['poi-plugin-navy-staff'])
 
 const AACITooltip = ({ AACI: { AACIs, allAACIs, availableAACIs } }) =>
   <div>
     <div className="info-tooltip-entry">
       <span className="info-tooltip-item">
-        AACI Type
+        {__('AACI Type')}
       </span>
       <span>
-        Shotdown
+        {__('Shotdown')}
       </span>
     </div>
     {
@@ -22,7 +39,7 @@ const AACITooltip = ({ AACI: { AACIs, allAACIs, availableAACIs } }) =>
         <div className="info-tooltip-entry" key={id}>
           <span className="info-tooltip-item">
             <Label bsStyle={availableAACIs.includes(id) ? 'success' : 'default'}>
-              {`${id}${get(AACITable, `${id}.name.length`, 0) > 0 ? ` - ${AACITable[id].name}` : ''}`}
+              {`${id}${get(AACITable, `${id}.name.length`, 0) > 0 ? ` - ${__(AACITable[id].name)}` : ''}`}
               {
                 AACIs.includes(id) && <FA name="check" />
               }
@@ -56,9 +73,9 @@ const ShipView = connect(
             {
               AACI.AACIs.length
               ?
-                <Label bsStyle="success">AACI on</Label>
+                <Label bsStyle="success">{__('AACI on')}</Label>
               :
-                <Label>AACI off</Label>
+                <Label>{__('AACI off')}</Label>
             }
           </OverlayTrigger>
         </div>
@@ -66,9 +83,9 @@ const ShipView = connect(
           {
             isOASW
             ?
-              <Label bsStyle="success">OASW on</Label>
+              <Label bsStyle="success">{__('OASW on')}</Label>
             :
-              <Label>OASW off</Label>
+              <Label>{__('OASW off')}</Label>
           }
         </div>
       </div>
