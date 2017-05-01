@@ -40,7 +40,7 @@ const FleetInfo = connect(
   const TPTooltip = (
     <Tooltip id="staff-TP-tooltip">
       <span>
-        {`${__('A rank:')} ${Math.floor(TP * 0.7)}`}
+        {`${__('A rank: ')}${Math.floor(TP * 0.7)}`}
       </span>
     </Tooltip>
   )
@@ -77,7 +77,7 @@ const FleetInfo = connect(
           overlay={TPTooltip}
           placement="bottom"
         >
-          <span>{`TP: ${TP}`}</span>
+          <span>{`${__('TP: ')}${TP}`}</span>
         </OverlayTrigger>
       </div>
       <div>
