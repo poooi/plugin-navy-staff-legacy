@@ -12,6 +12,8 @@ import {
 } from 'views/utils/selectors'
 
 import FleetView from './views/fleet-view'
+import CombinedFleetView from './views/combined-fleet-view'
+import AirbaseView from './views/airbase-view'
 import { CombinedFleetType } from './utils'
 
 // const { i18n } = window
@@ -125,7 +127,7 @@ const NavyStaff = connect(
         View = <CombinedFleetView />
         break
       case 4:
-        View = <LandBaseView />
+        View = <AirbaseView />
         break
       default:
         View = <FleetView fleetId={activeId} />

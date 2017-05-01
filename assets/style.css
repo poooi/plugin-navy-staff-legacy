@@ -19,6 +19,12 @@
   flex: 1;
   text-align: center;
 }
+#navy-staff .ship-list {
+  display: flex;
+}
+#navy-staff .ship-list >div {
+  flex: 1;
+}
 #navy-staff .ship-view {
   display: flex;
   padding: .5ex 0;

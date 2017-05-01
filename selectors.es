@@ -107,3 +107,13 @@ export const combinedFleetStateSelector = createSelector([
   fleetStateSelectorFactory(0),
   fleetStateSelectorFactory(1),
 ], (state0, state1) => Math.max(state0, state1))
+
+export const combinedFleetInfoSelector = createSelector([
+  normalizedFleetShipsDataSelectorFactory(0),
+  normalizedFleetShipsEquipDataSelectorFactory(0),
+  normalizedFleetShipsDataSelectorFactory(1),
+  normalizedFleetShipsEquipDataSelectorFactory(1),
+], (ships0, ships1, equips0, equips1) => ({
+  TP: getTransportPoint([...ships0, ...ships1], [...equips0, ...equips1]),
+  AACIs: getFleetAvailableAACIs([...ships0, ...ships1], [...equips0, ...equips1]),
+}))

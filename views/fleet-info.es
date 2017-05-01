@@ -4,7 +4,7 @@ import { Panel, OverlayTrigger, Tooltip, Label, Badge } from 'react-bootstrap'
 import { get } from 'lodash'
 import { resolve } from 'path'
 
-import { fleetInfoSelectorFactory } from '../selectors'
+import { fleetInfoSelectorFactory, combinedFleetInfoSelector } from '../selectors'
 import { AACITable } from '../aaci'
 
 // const { i18n } = window
@@ -24,9 +24,18 @@ window.i18n['poi-plugin-navy-staff'].setLocale(window.language)
 const __ = window.i18n['poi-plugin-navy-staff'].__.bind(window.i18n['poi-plugin-navy-staff'])
 
 const FleetInfo = connect(
-  (state, { fleetId }) => ({
-    ...fleetInfoSelectorFactory(fleetId)(state),
-  })
+  (state, { fleetId, combined }) => {
+
+    if (combined) {
+      return {
+        ...combinedFleetInfoSelector(state),
+      }
+    }
+
+    return {
+      ...fleetInfoSelectorFactory(fleetId)(state),
+    }
+  }
 )(({ TP, AACIs }) => {
   const TPTooltip = (
     <Tooltip id="staff-TP-tooltip">

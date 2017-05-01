@@ -22,21 +22,30 @@ window.i18n['poi-plugin-navy-staff'].setLocale(window.language)
 
 const __ = window.i18n['poi-plugin-navy-staff'].__.bind(window.i18n['poi-plugin-navy-staff'])
 
-const FleetView = connect(
-  (state, props) => {
-    const { fleetId = 0 } = props
+const CombinedFleetView = connect(
+  (state) => {
     return ({
-      shipIds: fleetShipsIdSelectorFactory(fleetId)(state),
-      fleetId,
+      shipIds1: fleetShipsIdSelectorFactory(1)(state),
+      shipIds2: fleetShipsIdSelectorFactory(1)(state),
     })
   }
-)(({ fleetId, shipIds = [] }) => (
+)(({ shipIds1 = [], shipIds2 = [] }) => (
   <div>
-    <FleetInfo fleetId={fleetId} />
+    <FleetInfo combined />
     <div className="ship-list">
       <div className="main-fleet">
         {
-          shipIds.map(id =>
+          shipIds1.map(id =>
+            <ShipView
+              shipId={id}
+              key={id}
+            />
+          )
+        }
+      </div>
+      <div className="escort-fleet">
+        {
+          shipIds2.map(id =>
             <ShipView
               shipId={id}
               key={id}
@@ -49,4 +58,4 @@ const FleetView = connect(
   )
 )
 
-export default FleetView
+export default CombinedFleetView
