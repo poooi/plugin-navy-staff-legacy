@@ -25,7 +25,7 @@ const __ = window.i18n['poi-plugin-navy-staff'].__.bind(window.i18n['poi-plugin-
 const CombinedFleetView = connect(
   (state) => {
     return ({
-      shipIds1: fleetShipsIdSelectorFactory(1)(state),
+      shipIds1: fleetShipsIdSelectorFactory(0)(state),
       shipIds2: fleetShipsIdSelectorFactory(1)(state),
     })
   }

@@ -7,6 +7,9 @@
 #navy-staff .fleet-name-button > button {
   flex: 1;
 }
+#navy-staff .fleet-name-button > button.combined {
+  flex: 2;
+}
 #navy-staff .fleet-info {
   border: 0px;
   margin-bottom: 1em;

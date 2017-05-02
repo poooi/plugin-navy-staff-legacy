@@ -4,17 +4,19 @@ import { createSelector } from 'reselect'
 import { memoize, get } from 'lodash'
 import { Button, ButtonGroup } from 'react-bootstrap'
 import { join } from 'path'
+import classnames from 'classnames'
 
 import {
   fleetNameSelectorFactory,
   fleetStateSelectorFactory,
-  combinedFleetStateSelector,
 } from 'views/utils/selectors'
+
+import { combinedFleetStateSelector } from './selectors'
 
 import FleetView from './views/fleet-view'
 import CombinedFleetView from './views/combined-fleet-view'
 import AirbaseView from './views/airbase-view'
-import { CombinedFleetType } from './utils'
+import { combinedFleetType } from './utils'
 
 // const { i18n } = window
 // const __ = i18n['poi-plugin-navy-staff'].__.bind(i18n['poi-plugin-navy-staff'])
@@ -82,7 +84,10 @@ const CombinedFleetViewSwitchButton = connect(
     bsStyle={getStyle(fleetState, disabled)}
     onClick={onClick}
     disabled={disabled}
-    className={fleetId === activeId ? 'active' : ''}
+    className={classnames({
+      active: fleetId === activeId,
+      combined: true,
+    })}
   >
     {fleetName}
   </Button>
@@ -99,6 +104,15 @@ const NavyStaff = connect(
     combinedFlag: PropTypes.number.isRequired,
   }
 
+  componentWillReciveProps = (nextProps) => {
+    const { combinedFlag } = this.props
+    if (combinedFlag === 0 && nextProps.combinedFlag > 0) {
+      this.setState({
+        activeId: -1,
+      })
+    }
+  }
+
   defaultProps = {
     fleetCount: 0,
   }
@@ -107,7 +121,7 @@ const NavyStaff = connect(
     super(props)
 
     this.state = {
-      activeId: 0,
+      activeId: props.combinedFlag > 0 ? -1 : 0,
     }
   }
 
@@ -123,7 +137,7 @@ const NavyStaff = connect(
 
     let View
     switch (activeId) {
-      case 12:
+      case -1:
         View = <CombinedFleetView />
         break
       case 4:
@@ -142,9 +156,9 @@ const NavyStaff = connect(
             ?
               <CombinedFleetViewSwitchButton
                 fleetId={12}
-                onClick={this.handleClick(12)}
+                onClick={this.handleClick(-1)}
                 activeId={activeId}
-                fleetName={__(CombinedFleetType[combinedFlag])}
+                fleetName={__(combinedFleetType[combinedFlag])}
               />
             :
               [0, 1].map(i =>
