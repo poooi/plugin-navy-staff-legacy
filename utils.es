@@ -1,11 +1,8 @@
+import { join } from 'path'
 
-// squadrons is array of [squad, _equip, $equip]
-export const getAirbaseSortieFP = (squadrons = []) => {
-  let fp = 0
-  squadrons.forEach(([squad, _equip, $equip]) => {
-
-  })
-}
+const { APPDATA_PATH } = window
+export const PLUGIN_KEY = 'poi-plugin-navy-staff'
+export const DATA_PATH = join(APPDATA_PATH, `${PLUGIN_KEY}.json`)
 
 const TPByItem = {
   75: 5, // ドラム缶(輸送用)
