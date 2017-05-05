@@ -79,9 +79,8 @@ export const reducer = (state = initState, action) => {
     }
     case `@@${PLUGIN_KEY}@dp-removeShip`: {
       const newCurrent = current.slice()
-      const index = newCurrent[areaIndex].indexOf(shipId)
-      if (index > -1) {
-        newCurrent[areaIndex] = newCurrent[areaIndex].splice(index, 1)
+      if (newCurrent[areaIndex].includes(shipId)) {
+        newCurrent[areaIndex] = newCurrent[areaIndex].filter(id => id !== shipId)
         return {
           ...state,
           dpCurrent: newCurrent,
@@ -91,9 +90,8 @@ export const reducer = (state = initState, action) => {
     }
     case `@@${PLUGIN_KEY}@dp-displaceShip`: {
       const newCurrent = current.slice()
-      const index = newCurrent[fromAreaIndex].indexOf(shipId)
-      if (index > -1) {
-        newCurrent[fromAreaIndex] = newCurrent[fromAreaIndex].splice(index, 1)
+      if (newCurrent[fromAreaIndex].includes(shipId)) {
+        newCurrent[fromAreaIndex] = newCurrent[fromAreaIndex].filter(id => id !== shipId)
         newCurrent[toAreaIndex] = [...toAreaIndex, shipId]
         return {
           ...state,
