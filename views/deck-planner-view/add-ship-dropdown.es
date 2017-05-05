@@ -6,7 +6,7 @@ import { resolve } from 'path'
 import fp from 'lodash/fp'
 import FontAwesome from 'react-fontawesome'
 
-import { shipMenuDataSelector } from './selectors'
+import { shipMenuDataSelector } from '../../selectors'
 import { shipSuperTypeMap } from './constants'
 
 window.i18n['poi-plugin-navy-staff'] = new (require('i18n-2'))({

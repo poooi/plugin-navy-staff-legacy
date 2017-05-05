@@ -1,9 +1,10 @@
 import memoize from 'fast-memoize'
 import { createSelector } from 'reselect'
-import { stateSelector, equipDataSelectorFactory,
+import { stateSelector, shipsSelector, equipDataSelectorFactory,
   shipDataSelectorFactory, shipEquipDataSelectorFactory,
   fleetShipsDataSelectorFactory, fleetShipsEquipDataSelectorFactory,
   fleetStateSelectorFactory } from 'views/utils/selectors'
+import fp from 'lodash/fp'
 
 import { getTransportPoint } from './utils'
 import { getFleetAvailableAACIs, getShipAvaliableAACIs, getShipAllAACIs, getShipAACIs } from './aaci'
@@ -117,3 +118,31 @@ export const combinedFleetInfoSelector = createSelector([
   TP: getTransportPoint([...ships0, ...ships1], [...equips0, ...equips1]),
   AACIs: getFleetAvailableAACIs([...ships0, ...ships1], [...equips0, ...equips1]),
 }))
+
+
+export const ShipItemSelectorFactory = memoize(shipId =>
+  createSelector([
+    shipDataSelectorFactory(shipId),
+  ], ([ship, $ship] = []) =>
+    !!ship && !!$ship
+    ? ({
+      id: ship.api_id,
+      typeId: $ship.api_stype,
+      name: $ship.api_name,
+      lv: ship.api_lv,
+      area: ship.api_sally_area,
+    })
+    : undefined
+  )
+)
+
+export const shipMenuDataSelector = createSelector(
+  [
+    shipsSelector,
+    state => state,
+  ], (_ships, state) =>
+    fp.flow(
+      fp.map(ship => ship.api_id),
+      fp.map(shipId => ShipItemSelectorFactory(shipId)(state)),
+    )(_ships)
+)
