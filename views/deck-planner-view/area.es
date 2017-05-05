@@ -73,7 +73,12 @@ const ShipChip = connect(
     const { hover } = this.state
 
     return (
-      <Label className="ship-chip" onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave}>
+      <Label
+        className="ship-chip"
+        onMouseOver={this.handleMouseOver}
+        onMouseLeave={this.handleMouseLeave}
+        onContextMenu={onRemove}
+      >
         <span className="ship-type">
           {shipTypes[typeId]}
         </span>
