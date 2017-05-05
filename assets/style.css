@@ -49,3 +49,12 @@
   flex: 1;
   text-align: center;
 }
+
+#navy-staff .dropdown-menu {
+  overflow-y: scroll;
+  max-height: 15em;
+}
+
+#navy-staff .dropdown-menu::-webkit-scrollbar {
+  width: 1em;
+}

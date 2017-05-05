@@ -16,6 +16,7 @@ import { combinedFleetStateSelector } from './selectors'
 import FleetView from './views/fleet-view'
 import CombinedFleetView from './views/combined-fleet-view'
 import AirbaseView from './views/airbase-view'
+import DeckPlannerView from './views/deck-planner-view'
 import { combinedFleetType } from './utils'
 
 // const { i18n } = window
@@ -143,6 +144,9 @@ const NavyStaff = connect(
       case 4:
         View = <AirbaseView />
         break
+      case 5:
+        View = <DeckPlannerView />
+        break
       default:
         View = <FleetView fleetId={activeId} />
     }
@@ -188,6 +192,13 @@ const NavyStaff = connect(
             className={activeId === 4 ? 'active' : ''}
           >
             {__('Land Base')}
+          </Button>
+          <Button
+            bsSize="small"
+            onClick={this.handleClick(5)}
+            className={activeId === 5 ? 'active' : ''}
+          >
+            {__('Deck Planner')}
           </Button>
         </ButtonGroup>
         {View}
