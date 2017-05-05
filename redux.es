@@ -71,11 +71,14 @@ export const reducer = (state = initState, action) => {
     }
     case `@@${PLUGIN_KEY}@dp-addShip`: {
       const newCurrent = current.slice()
-      newCurrent[areaIndex] = [...new Set([...newCurrent[areaIndex], shipId])]
-      return {
-        ...state,
-        dpCurrent: newCurrent,
+      if (!newCurrent[areaIndex].includes(shipId)) {
+        newCurrent[areaIndex] = [...newCurrent[areaIndex], shipId]
+        return {
+          ...state,
+          dpCurrent: newCurrent,
+        }
       }
+      break
     }
     case `@@${PLUGIN_KEY}@dp-removeShip`: {
       const newCurrent = current.slice()
