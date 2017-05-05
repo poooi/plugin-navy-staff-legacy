@@ -50,8 +50,8 @@ const DeckPlannerView = connect(
     return (
       <div>
         {
-          areas.map(area =>
-            <Area area={area} />
+          areas.map((area, index) =>
+            <Area key={area.name} area={area} index={index} />
           )
         }
       </div>

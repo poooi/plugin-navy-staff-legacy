@@ -1,3 +1,20 @@
+import { map, each } from 'lodash'
+import { resolve } from 'path'
+
+window.i18n['poi-plugin-navy-staff'] = new (require('i18n-2'))({
+  locales: ['zh-CN', 'zh-TW', 'ja-JP', 'en-US', 'ko-KR'],
+  defaultLocale: 'en-US',
+  directory: resolve(__dirname, '../../i18n'),
+  updateFiles: true,
+  indent: "\t",
+  extension: '.json',
+  devMode: true,
+})
+window.i18n['poi-plugin-navy-staff'].setLocale(window.language)
+
+const __ = window.i18n['poi-plugin-navy-staff'].__.bind(window.i18n['poi-plugin-navy-staff'])
+
+
 // ship types dated 20170106, beginning with id=1
 // const shipTypes = ["海防艦", "駆逐艦", "軽巡洋艦", "重雷装巡洋艦",
 // "重巡洋艦", "航空巡洋艦", "軽空母", "戦艦", "戦艦", "航空戦艦", "正規空母",
@@ -35,3 +52,33 @@ export const shipSuperTypeMap = [
     id: [1, 15, 16, 17, 19, 20, 22],
   },
 ]
+
+export const reverseSuperTypeMap = {}
+
+each(shipSuperTypeMap, ({ name, id }) => each(id, typeId => reverseSuperTypeMap[typeId] = name))
+
+
+export const shipTypes = {
+  1: __('DE'),
+  2: __('DD'),
+  3: __('CL'),
+  4: __('CLT'),
+  5: __('CA'),
+  6: __('CAV'),
+  7: __('CVL'),
+  8: __('FBB'),
+  9: __('BB'),
+  10: __('BBV'),
+  11: __('CV'),
+  12: __('BB'),
+  13: __('SS'),
+  14: __('SSV'),
+  15: __('AO'),
+  16: __('AV'),
+  17: __('LHA'),
+  18: __('CVB'),
+  19: __('AR'),
+  20: __('AS'),
+  21: __('CT'),
+  22: __('AO'),
+}

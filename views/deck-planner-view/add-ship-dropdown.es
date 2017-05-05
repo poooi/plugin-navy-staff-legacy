@@ -67,7 +67,7 @@ class ShipMenu extends Component {
       <ul className="dropdown-menu">
         {
           typeIndex >= 0 &&
-            <MenuItem onSelect={this.handleGoBack}>{__('Go Back')}</MenuItem>
+            <MenuItem onSelect={this.handleGoBack}>{__('return to ship types')}</MenuItem>
         }
         {
           typeIndex >= 0
@@ -78,7 +78,7 @@ class ShipMenu extends Component {
           :
             map(shipSuperTypeMap, (type, index) =>
               <Item key={type.name} eventKey={index} onSelect={this.handleTypeSelect(index)}>
-                {type.name}
+                {__(type.name)}
               </Item>
             )
         }
@@ -94,7 +94,7 @@ const AddShipDropdown = connect(
   })
 )(({ shipItems, area, onSelect }) =>
   (<Dropdown id={`add-ship-dropdown-${area}`}>
-    <Dropdown.Toggle>
+    <Dropdown.Toggle bsSize="xsmall">
       <FontAwesome name="plus" />
     </Dropdown.Toggle>
     <ShipMenu bsRole="menu" >

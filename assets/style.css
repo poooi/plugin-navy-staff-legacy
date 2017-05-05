@@ -58,3 +58,32 @@
 #navy-staff .dropdown-menu::-webkit-scrollbar {
   width: 1em;
 }
+
+#navy-staff .area {
+  margin: 1em 0;
+}
+
+#navy-staff .area .planned .pool {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-content: flex-start;
+  min-height: 6em;
+}
+
+#navy-staff .ship-chip {
+  margin: .25em .5em;
+  padding-left: 1em;
+  padding-right: 1em;
+  border-radius: 2em;
+  flex: 0;
+  height: 2em;
+  display: flex;
+  align-items: center;
+}
+
+#navy-staff .ship-chip .ship-type {
+  margin-right: 1ex;
+}
+
