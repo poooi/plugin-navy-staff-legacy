@@ -94,7 +94,7 @@ const AddShipDropdown = connect(
   })
 )(({ shipItems, area, onSelect }) =>
   (<Dropdown id={`add-ship-dropdown-${area}`}>
-    <Dropdown.Toggle bsSize="xsmall">
+    <Dropdown.Toggle bsStyle="link">
       <FontAwesome name="plus" />
     </Dropdown.Toggle>
     <ShipMenu bsRole="menu" >
