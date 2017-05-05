@@ -87,3 +87,7 @@
   margin-right: 1ex;
 }
 
+#navy-staff .ship-chip .remove {
+  padding-left: .5em;
+  padding-right: 0;
+}

@@ -1,5 +1,5 @@
-import React, { Component } from 'react'
-import { Panel, Label } from 'react-bootstrap'
+import React, { Component, PureComponent } from 'react'
+import { Panel, Label, Button } from 'react-bootstrap'
 import FA from 'react-fontawesome'
 import { resolve } from 'path'
 import { get } from 'lodash'
@@ -43,19 +43,57 @@ const ShipChip = connect(
     ...ShipItemSelectorFactory(props.shipId)(state),
     color: get(state, 'fcd.shiptag.color', []),
   })
-)(({ typeId, name, lv, area, color }) =>
-  <Label className="ship-chip">
-    <span className="ship-type">
-      {shipTypes[typeId]}
-    </span>
-    <span>
-      {`${name} Lv.${lv}`}
-    </span>
-    {
-      area > 0 && <FA name="tag" style={{ color: color[area] }} />
+)(class ShipChip extends PureComponent {
+
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      hover: false,
     }
-  </Label>
-)
+  }
+
+  handleMouseOver = () => {
+    if (this.state.hover) {
+      return
+    }
+    this.setState({
+      hover: true,
+    })
+  }
+
+  handleMouseLeave = () => {
+    this.setState({
+      hover: false,
+    })
+  }
+
+  render() {
+    const { typeId, name, lv, area, color, onRemove } = this.props
+    const { hover } = this.state
+
+    return (
+      <Label className="ship-chip" onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave}>
+        <span className="ship-type">
+          {shipTypes[typeId]}
+        </span>
+        <span>
+          {`${name} Lv.${lv}`}
+        </span>
+        <span>
+          {
+            area > 0 && <FA name="tag" style={{ color: color[area] }} />
+          }
+        </span>
+        <span>
+          {
+            hover && <Button bsStyle="link" onClick={onRemove} className="remove"><FA name="times-circle" /></Button>
+          }
+        </span>
+      </Label>
+    )
+  }
+})
 
 const Area = connect(
   state => ({
@@ -72,9 +110,14 @@ const Area = connect(
   }
 
   handleAddShip = (eventKey, e) => {
-    console.log(eventKey)
     this.setState({
       shipIds: [...new Set([...this.state.shipIds, eventKey])],
+    })
+  }
+
+  handleRemoveShip = id => () => {
+    this.setState({
+      shipIds: this.state.shipIds.filter(shipId => shipId !== id),
     })
   }
 
@@ -90,7 +133,7 @@ const Area = connect(
             </div>
             <div className="pool">
               {
-                fp.map(id => <ShipChip shipId={id} />)(shipIds)
+                fp.map(id => <ShipChip shipId={id} onRemove={this.handleRemoveShip(id)} />)(shipIds)
               }
               <Label className="ship-chip"><AddShipDropdown area={area.name} onSelect={this.handleAddShip} /></Label>
             </div>
