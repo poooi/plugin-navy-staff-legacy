@@ -87,7 +87,13 @@
   margin-right: 1ex;
 }
 
-#navy-staff .ship-chip .remove {
+#navy-staff .ship-chip .ship-name {
+  line-height: initial;
+}
+
+#navy-staff .ship-chip .displace .fa,
+#navy-staff .ship-chip .remove .fa{
   padding-left: .5em;
   padding-right: 0;
+  font-size: 110%;
 }

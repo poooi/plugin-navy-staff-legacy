@@ -46,6 +46,7 @@ const DeckPlannerView = connect(
         name,
         color: color[index],
         ships: [],
+        areaIndex: index,
       })),
     }
   }
@@ -65,8 +66,13 @@ const DeckPlannerView = connect(
     return (
       <div>
         {
-          areas.map((area, index) =>
-            <Area key={area.name} area={area} index={index} />
+          areas.map(area =>
+            <Area
+              key={area.name}
+              area={area}
+              index={area.areaIndex}
+              others={areas.filter(({ areaIndex }) => areaIndex !== area.areaIndex)}
+            />
           )
         }
       </div>

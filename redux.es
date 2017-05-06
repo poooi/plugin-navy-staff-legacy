@@ -101,7 +101,7 @@ export const reducer = (state = initState, action) => {
       const newCurrent = current.slice()
       if (newCurrent[fromAreaIndex].includes(shipId)) {
         newCurrent[fromAreaIndex] = newCurrent[fromAreaIndex].filter(id => id !== shipId)
-        newCurrent[toAreaIndex] = [...toAreaIndex, shipId]
+        newCurrent[toAreaIndex] = [...newCurrent[toAreaIndex], shipId]
         return {
           ...state,
           dpCurrent: newCurrent,

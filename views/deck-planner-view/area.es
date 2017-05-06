@@ -1,5 +1,5 @@
 import React, { Component, PureComponent } from 'react'
-import { Panel, Label, Button } from 'react-bootstrap'
+import { Panel, Label, Button, Dropdown, MenuItem } from 'react-bootstrap'
 import FA from 'react-fontawesome'
 import { resolve } from 'path'
 import { get } from 'lodash'
@@ -72,7 +72,7 @@ const ShipChip = connect(
   }
 
   render() {
-    const { typeId, name, lv, area, color, onRemove } = this.props
+    const { id, typeId, name, lv, area, color, mapname, others, onRemove, onDisplace } = this.props
     const { hover } = this.state
 
     return (
@@ -83,10 +83,21 @@ const ShipChip = connect(
         onContextMenu={onRemove}
       >
         <span className="ship-type">
-          {shipTypes[typeId]}
+          {shipTypes[typeId]}{' | '}
         </span>
         <span>
-          {`${name} Lv.${lv}`}
+          <Dropdown id={`displace-${id}`}>
+            <a bsRole="toggle" className="ship-name">{`${name} Lv.${lv}`}</a>
+            <Dropdown.Menu>
+              {
+                others.map(_area =>
+                  <MenuItem eventKey={_area.areaIndex} key={_area.name} onSelect={onDisplace}>
+                    {__('Move to ')} <Label style={{ color: _area.color }}><FA name="tag" />{_area.name}</Label>
+                  </MenuItem>
+                )
+              }
+            </Dropdown.Menu>
+          </Dropdown>
         </span>
         <span>
           {
@@ -95,7 +106,7 @@ const ShipChip = connect(
         </span>
         <span>
           {
-            hover && <Button bsStyle="link" onClick={onRemove} className="remove"><FA name="times-circle" /></Button>
+            hover && <a onClick={onRemove} className="remove"><FA name="times-circle" /></a>
           }
         </span>
       </Label>
@@ -118,15 +129,22 @@ const Area = connect(
   }
 
   handleRemoveShip = id => () => {
-    console.log(id, this.props.index)
     dispatch(onRemoveShip({
       shipId: id,
       areaIndex: this.props.index,
     }))
   }
 
+  handleDisplace = id => (eventKey, e) => {
+    dispatch(onDisplaceShip({
+      shipId: id,
+      fromAreaIndex: this.props.index,
+      toAreaIndex: eventKey,
+    }))
+  }
+
   render() {
-    const { area, index, ships, shipIds } = this.props
+    const { area, index, others, ships, shipIds } = this.props
     return (
       <div style={{ border: `solid 1px ${hexToRGBA(area.color, 0.5)}` }} className="area">
         <div style={{ backgroundColor: hexToRGBA(area.color, 0.5) }}>
@@ -136,7 +154,15 @@ const Area = connect(
             </div>
             <div className="pool">
               {
-                fp.map(id => <ShipChip shipId={id} onRemove={this.handleRemoveShip(id)} />)(shipIds)
+                fp.map(
+                  id =>
+                    <ShipChip
+                      shipId={id}
+                      onRemove={this.handleRemoveShip(id)}
+                      onDisplace={this.handleDisplace(id)}
+                      others={others}
+                    />
+                )(shipIds)
               }
               <Label className="ship-chip"><AddShipDropdown area={area.name} onSelect={this.handleAddShip} /></Label>
             </div>
