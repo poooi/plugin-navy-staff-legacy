@@ -6,6 +6,9 @@
 }
 #navy-staff .fleet-name-button > button {
   flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 #navy-staff .fleet-name-button > button.combined {
   flex: 2;
