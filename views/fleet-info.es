@@ -45,7 +45,7 @@ const FleetInfo = connect(
           <div key={id} className="info-tooltip-entry">
             <span className="info-tooltip-item">
               <Label bsStyle="success">
-                {`${id}${get(AACITable, `${id}.name.length`, 0) > 0 ? ` - ${AACITable[id].name}` : ''}`}
+                {`${id}${get(AACITable, `${id}.name.length`, 0) > 0 ? ` - ${__(AACITable[id].name)}` : ''}`}
               </Label>
             </span>
             <span>
