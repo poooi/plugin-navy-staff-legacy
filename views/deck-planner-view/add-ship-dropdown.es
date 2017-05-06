@@ -63,7 +63,7 @@ class ShipMenu extends Component {
     const { typeIndex } = this.state
 
     return (
-      <ul className="dropdown-menu">
+      <ul className="dropdown-menu add-ship-menu">
         {
           typeIndex >= 0 &&
             <MenuItem onSelect={this.handleGoBack}>{__('return to ship types')}</MenuItem>

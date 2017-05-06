@@ -62,8 +62,23 @@
   width: 1em;
 }
 
+#navy-staff .dropdown-menu.add-ship-menu {
+  right: 0;
+  left: initial;
+}
+
 #navy-staff .area {
   margin: 1em 0;
+}
+
+#navy-staff .area .header {
+  display: flex;
+  align-items: center;
+}
+
+#navy-staff .area .header .area-name {
+  flex: 1;
+  text-align: left;
 }
 
 #navy-staff .area .planned .pool {
@@ -73,6 +88,7 @@
   justify-content: flex-start;
   align-content: flex-start;
   min-height: 6em;
+  padding-top: .5em;
 }
 
 #navy-staff .area .planned .lane {

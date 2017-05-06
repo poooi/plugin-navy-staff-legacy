@@ -153,11 +153,12 @@ const Area = connect(
     const groupShipIds = groupBy(shipIds, id => keyShips[id].superTypeIndex)
     return (
       <div style={{ border: `solid 1px ${hexToRGBA(area.color, 0.5)}` }} className="area">
+        <div className="header">
+          <span className="area-name"><Label style={{ color: area.color }}><FA name="tag" />{area.name}</Label></span>
+          <span><Label className="add-dropdown"><AddShipDropdown area={index} onSelect={this.handleAddShip} /></Label></span>
+        </div>
         <div style={{ backgroundColor: hexToRGBA(area.color, 0.5) }}>
           <div className="planned">
-            <div>
-              {__('Ships planned for this area: ')}
-            </div>
             <div className="pool">
               {
                 Object.keys(groupShipIds).map(idx =>
@@ -177,13 +178,7 @@ const Area = connect(
                   </div>
                 )
               }
-              <Label className="ship-chip"><AddShipDropdown area={index} onSelect={this.handleAddShip} /></Label>
             </div>
-          </div>
-        </div>
-        <div className="footer">
-          <div>
-            <Label style={{ color: area.color }}><FA name="tag" />{area.name}</Label>
           </div>
         </div>
       </div>
