@@ -1,6 +1,6 @@
 {
   "name": "poi-plugin-navy-staff",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Extended fleet and airbase information plugin for poi, as moe as JLT",
   "main": "index.es",
   "scripts": {
