@@ -53,7 +53,7 @@ export const squadronDataSelectorFactory = memoize(index =>
 const normalizedFleetShipsDataSelectorFactory = memoize(fleetId =>
   createSelector([
     fleetShipsDataSelectorFactory(fleetId),
-  ], shipsData =>
+  ], (shipsData = []) =>
     shipsData.filter(([_ship, $ship]) => !!_ship && !!$ship)
     .map(([_ship, $ship]) => ({ ...$ship, ..._ship }))
   )
@@ -62,7 +62,7 @@ const normalizedFleetShipsDataSelectorFactory = memoize(fleetId =>
 const normalizedFleetShipsEquipDataSelectorFactory = memoize(fleetId =>
   createSelector([
     fleetShipsEquipDataSelectorFactory(fleetId),
-  ], equipsData =>
+  ], (equipsData = []) =>
     equipsData.map(equipData =>
       equipData.filter(([_equip, $equip, onslot] = []) => !!_equip && !!$equip)
       .map(([_equip, $equip, onslot]) => ([{ ...$equip, ..._equip }, onslot]))
