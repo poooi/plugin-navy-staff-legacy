@@ -1,19 +1,7 @@
 import { map, each } from 'lodash'
 import { resolve } from 'path'
 
-window.i18n['poi-plugin-navy-staff'] = new (require('i18n-2'))({
-  locales: ['zh-CN', 'zh-TW', 'ja-JP', 'en-US', 'ko-KR'],
-  defaultLocale: 'en-US',
-  directory: resolve(__dirname, '../../i18n'),
-  updateFiles: true,
-  indent: "\t",
-  extension: '.json',
-  devMode: true,
-})
-window.i18n['poi-plugin-navy-staff'].setLocale(window.language)
-
 const __ = window.i18n['poi-plugin-navy-staff'].__.bind(window.i18n['poi-plugin-navy-staff'])
-
 
 // ship types dated 20170106, beginning with id=1
 // const shipTypes = ["海防艦", "駆逐艦", "軽巡洋艦", "重雷装巡洋艦",

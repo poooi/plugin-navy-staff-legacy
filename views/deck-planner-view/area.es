@@ -13,19 +13,7 @@ import { shipTypes } from './constants'
 
 const { dispatch } = window
 
-window.i18n['poi-plugin-navy-staff'] = new (require('i18n-2'))({
-  locales: ['zh-CN', 'zh-TW', 'ja-JP', 'en-US', 'ko-KR'],
-  defaultLocale: 'en-US',
-  directory: resolve(__dirname, '../../i18n'),
-  updateFiles: true,
-  indent: "\t",
-  extension: '.json',
-  devMode: true,
-})
-window.i18n['poi-plugin-navy-staff'].setLocale(window.language)
-
 const __ = window.i18n['poi-plugin-navy-staff'].__.bind(window.i18n['poi-plugin-navy-staff'])
-
 
 const hexToRGBA = (hex, opacity = 1) => {
   if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {

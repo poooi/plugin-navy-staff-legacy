@@ -27,20 +27,6 @@ import { onLoadData, dataObserver } from './redux'
 
 const { dispatch } = window
 
-// const { i18n } = window
-// const __ = i18n['poi-plugin-navy-staff'].__.bind(i18n['poi-plugin-navy-staff'])
-
-window.i18n['poi-plugin-navy-staff'] = new (require('i18n-2'))({
-  locales: ['zh-CN', 'zh-TW', 'ja-JP', 'en-US', 'ko-KR'],
-  defaultLocale: 'en-US',
-  directory: join(__dirname, 'i18n'),
-  updateFiles: true,
-  indent: "\t",
-  extension: '.json',
-  devMode: true,
-})
-window.i18n['poi-plugin-navy-staff'].setLocale(window.language)
-
 const __ = window.i18n['poi-plugin-navy-staff'].__.bind(window.i18n['poi-plugin-navy-staff'])
 
 const defaultFleetNames = ['I', 'II', 'III', 'IV']
