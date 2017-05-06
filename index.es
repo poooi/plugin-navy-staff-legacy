@@ -4,12 +4,16 @@ import { createSelector } from 'reselect'
 import { memoize, get } from 'lodash'
 import { Button, ButtonGroup } from 'react-bootstrap'
 import { join } from 'path'
+import { promisify } from 'bluebird'
+import { readJSON } from 'fs-extra'
 import classnames from 'classnames'
+import { observe } from 'redux-observers'
 
 import {
   fleetNameSelectorFactory,
   fleetStateSelectorFactory,
 } from 'views/utils/selectors'
+import { store } from 'views/create-store'
 
 import { combinedFleetStateSelector } from './selectors'
 import { reducer as _reducer } from './redux'
@@ -18,7 +22,10 @@ import FleetView from './views/fleet-view'
 import CombinedFleetView from './views/combined-fleet-view'
 import AirbaseView from './views/airbase-view'
 import DeckPlannerView from './views/deck-planner-view'
-import { combinedFleetType } from './utils'
+import { combinedFleetType, DATA_PATH } from './utils'
+import { onLoadData, dataObserver } from './redux'
+
+const { dispatch } = window
 
 // const { i18n } = window
 // const __ = i18n['poi-plugin-navy-staff'].__.bind(i18n['poi-plugin-navy-staff'])
@@ -104,6 +111,25 @@ const NavyStaff = connect(
   static propTypes = {
     fleetCount: PropTypes.number.isRequired,
     combinedFlag: PropTypes.number.isRequired,
+  }
+
+  componentDidMount = async () => {
+    try {
+      const data = await promisify(readJSON)(DATA_PATH)
+      dispatch(onLoadData({
+        data,
+      }))
+    } catch (e) {
+      console.warn(e.stack)
+    }
+
+    this.unsubscribeObserver = observe(store, [dataObserver])
+  }
+
+  componentWillUnmount = () => {
+    if (this.unsubscribeObserver) {
+      this.unsubscribeObserver()
+    }
   }
 
   componentWillReciveProps = (nextProps) => {

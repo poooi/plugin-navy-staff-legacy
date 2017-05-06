@@ -3,7 +3,7 @@ import { isEqual } from 'lodash'
 
 import { extensionSelectorFactory } from 'views/utils/selectors'
 
-import { PLUGIN_KEY, HISTORY_PATH } from './utils'
+import { PLUGIN_KEY, DATA_PATH } from './utils'
 import FileWriter from './file-writer'
 
 export const onDPInit = ({ color, mapname }) =>
@@ -37,6 +37,12 @@ export const onDisplaceShip = ({ shipId, fromAreaIndex, toAreaIndex }) =>
     toAreaIndex,
   })
 
+export const onLoadData = ({ data }) =>
+  ({
+    type: `@@${PLUGIN_KEY}@loadData`,
+    data,
+  })
+
 // dpCurrent: [[ship ids in the area ] for area in fcd ] current deck planner's profile, it depends on the fcd name
 // so only ship ids are stored
 // TODO dpBookmarks: historical data, we must make sure it is independent of fcd
@@ -56,9 +62,15 @@ const initState = {
 }
 
 export const reducer = (state = initState, action) => {
-  const { type, mapname, color, shipId, areaIndex, fromAreaIndex, toAreaIndex } = action
+  const { type, mapname, shipId, areaIndex, fromAreaIndex, toAreaIndex, data } = action
   const current = state.dpCurrent
   switch (type) {
+    case `@@${PLUGIN_KEY}@loadData`: {
+      return {
+        ...state,
+        ...data,
+      }
+    }
     case `@@${PLUGIN_KEY}@dp-init`: {
       if (current.length < mapname.length) {
         const len = mapname.length - current.length
@@ -114,3 +126,16 @@ export const reducer = (state = initState, action) => {
   }
   return state
 }
+
+
+const fileWriter = new FileWriter()
+
+export const dataObserver = observer(
+  extensionSelectorFactory(PLUGIN_KEY),
+  (dispatch, current = {}, previous) => {
+    // avoid initial state overwrites file
+    if (!isEqual(current, previous) && Object.keys(current).length > 0) {
+      fileWriter.write(DATA_PATH, current)
+    }
+  }
+)
