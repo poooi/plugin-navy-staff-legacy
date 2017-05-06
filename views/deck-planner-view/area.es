@@ -169,7 +169,7 @@ const Area = connect(
                     />
                 )(shipIds)
               }
-              <Label className="ship-chip"><AddShipDropdown area={area.name} onSelect={this.handleAddShip} /></Label>
+              <Label className="ship-chip"><AddShipDropdown area={index} onSelect={this.handleAddShip} /></Label>
             </div>
           </div>
         </div>

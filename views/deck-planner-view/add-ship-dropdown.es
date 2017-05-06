@@ -59,7 +59,7 @@ class ShipMenu extends Component {
   }
 
   render() {
-    const { shipItems, children } = this.props
+    const { shipItems, children, area } = this.props
     const { typeIndex } = this.state
 
     return (
@@ -73,7 +73,7 @@ class ShipMenu extends Component {
           ?
             React.Children.toArray(children)
               .filter(child => get(shipSuperTypeMap, `${typeIndex}.id`, []).includes(child.props.typeId))
-              .filter(child => child.props.area === 0)
+              .filter(child => [0, area].includes(child.props.area))
           :
             map(shipSuperTypeMap, (type, index) =>
               <Item key={type.name} eventKey={index} onSelect={this.handleTypeSelect(index)}>
@@ -91,18 +91,23 @@ const AddShipDropdown = connect(
     shipItems: shipMenuDataSelector(state),
     area: props.area || '',
     allShipIds: deckPlannerAllShipIdsSelector(state),
+    color: get(state, 'fcd.shiptag.color', []),
   })
-)(({ shipItems, area, allShipIds, onSelect }) =>
+)(({ shipItems, area, allShipIds, color, onSelect }) =>
   (<Dropdown id={`add-ship-dropdown-${area}`}>
     <Dropdown.Toggle bsStyle="link">
       <FontAwesome name="plus" />
     </Dropdown.Toggle>
-    <ShipMenu bsRole="menu" >
+    <ShipMenu bsRole="menu" area={area}>
       {
         fp.flow(
           fp.filter(ship => !allShipIds.includes(ship.id)),
           fp.sortBy(ship => -ship.lv),
-          fp.map(ship => <Item onSelect={onSelect} key={ship.id} eventKey={ship.id} typeId={ship.typeId} area={ship.area}><span>{`${ship.name} Lv.${ship.lv}`}</span></Item>)
+          fp.map(ship =>
+            <Item onSelect={onSelect} key={ship.id} eventKey={ship.id} typeId={ship.typeId} area={ship.area}>
+              <span>{`${ship.name} Lv.${ship.lv}`}</span>
+              {!!ship.area && <Label><FontAwesome name="tag" style={{ color: color[ship.area] }} /></Label>}
+            </Item>)
         )(shipItems)
       }
     </ShipMenu>
