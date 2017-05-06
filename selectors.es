@@ -11,6 +11,7 @@ import { flatten } from 'lodash'
 import { PLUGIN_KEY, getTransportPoint } from './utils'
 import { getFleetAvailableAACIs, getShipAvaliableAACIs, getShipAllAACIs, getShipAACIs } from './aaci'
 import { isOASW } from './oasw'
+import { reverseSuperTypeMap } from './views/deck-planner-view/constants'
 
 // airbase: Array of all squadrons of all maps
 // squadron index is never guaranteed
@@ -133,6 +134,7 @@ export const ShipItemSelectorFactory = memoize(shipId =>
       name: $ship.api_name,
       lv: ship.api_lv,
       area: ship.api_sally_area,
+      superTypeIndex: reverseSuperTypeMap[$ship.api_stype] || 0,
     })
     : undefined
   )

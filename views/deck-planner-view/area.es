@@ -2,7 +2,7 @@ import React, { Component, PureComponent } from 'react'
 import { Panel, Label, Button, Dropdown, MenuItem } from 'react-bootstrap'
 import FA from 'react-fontawesome'
 import { resolve } from 'path'
-import { get } from 'lodash'
+import { get, groupBy, keyBy, map } from 'lodash'
 import fp from 'lodash/fp'
 import { connect } from 'react-redux'
 
@@ -149,6 +149,8 @@ const Area = connect(
 
   render() {
     const { area, index, others, ships, shipIds } = this.props
+    const keyShips = keyBy(ships, 'id')
+    const groupShipIds = groupBy(shipIds, id => keyShips[id].superTypeIndex)
     return (
       <div style={{ border: `solid 1px ${hexToRGBA(area.color, 0.5)}` }} className="area">
         <div style={{ backgroundColor: hexToRGBA(area.color, 0.5) }}>
@@ -158,16 +160,22 @@ const Area = connect(
             </div>
             <div className="pool">
               {
-                fp.map(
-                  id =>
-                    <ShipChip
-                      shipId={id}
-                      onRemove={this.handleRemoveShip(id)}
-                      onDisplace={this.handleDisplace(id)}
-                      others={others}
-                      key={id}
-                    />
-                )(shipIds)
+                Object.keys(groupShipIds).map(idx =>
+                  <div className="lane" key={idx}>
+                    {
+                      fp.map(
+                        id =>
+                          <ShipChip
+                            shipId={id}
+                            onRemove={this.handleRemoveShip(id)}
+                            onDisplace={this.handleDisplace(id)}
+                            others={others}
+                            key={id}
+                          />
+                      )(groupShipIds[idx])
+                    }
+                  </div>
+                )
               }
               <Label className="ship-chip"><AddShipDropdown area={index} onSelect={this.handleAddShip} /></Label>
             </div>

@@ -68,11 +68,23 @@
 
 #navy-staff .area .planned .pool {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   flex-wrap: wrap;
   justify-content: flex-start;
   align-content: flex-start;
   min-height: 6em;
+}
+
+#navy-staff .area .planned .lane {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-content: flex-start;
+}
+
+#navy-staff .area .planned .lane:not(:first-child) {
+  margin-top: 1em;
 }
 
 #navy-staff .ship-chip {

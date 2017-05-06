@@ -43,7 +43,7 @@ export const shipSuperTypeMap = [
 
 export const reverseSuperTypeMap = {}
 
-each(shipSuperTypeMap, ({ name, id }) => each(id, typeId => reverseSuperTypeMap[typeId] = name))
+each(shipSuperTypeMap, ({ id }, index) => each(id, typeId => reverseSuperTypeMap[typeId] = index))
 
 
 export const shipTypes = {
