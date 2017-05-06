@@ -41,6 +41,22 @@ const hexToRGBA = (hex, opacity = 1) => {
   return ''
 }
 
+class DisplaceToggle extends PureComponent {
+  handleClick = (e) => {
+    e.preventDefault()
+
+    this.props.onClick(e)
+  }
+
+  render() {
+    return (
+      <span onClick={this.handleClick}>
+        { this.props.children}
+      </span>
+    )
+  }
+}
+
 const ShipChip = connect(
   (state, props) => ({
     ...ShipItemSelectorFactory(props.shipId)(state),
@@ -87,7 +103,7 @@ const ShipChip = connect(
         </span>
         <span>
           <Dropdown id={`displace-${id}`}>
-            <a bsRole="toggle" className="ship-name">{`${name} Lv.${lv}`}</a>
+            <DisplaceToggle bsRole="toggle"><a className="ship-name">{`${name} Lv.${lv}`}</a></DisplaceToggle>
             <Dropdown.Menu>
               {
                 others.map(_area =>
@@ -161,6 +177,7 @@ const Area = connect(
                       onRemove={this.handleRemoveShip(id)}
                       onDisplace={this.handleDisplace(id)}
                       others={others}
+                      key={id}
                     />
                 )(shipIds)
               }

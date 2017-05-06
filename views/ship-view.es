@@ -68,7 +68,7 @@ const ShipView = connect(
         <div className="aaci">
           <OverlayTrigger
             placement="top"
-            overlay={<Tooltip className="info-tooltip"><AACITooltip AACI={AACI} /></Tooltip>}
+            overlay={<Tooltip className="info-tooltip" id={`aaci-info-${ship.api_id}`}><AACITooltip AACI={AACI} /></Tooltip>}
           >
             {
               AACI.AACIs.length
