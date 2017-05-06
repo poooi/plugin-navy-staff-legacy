@@ -19,7 +19,7 @@ const __ = window.i18n['poi-plugin-navy-staff'].__.bind(window.i18n['poi-plugin-
 
 const AirbaseView = () => (
   <div>
-    {__('under construction')}
+    第２期実装予定
   </div>
 )
 

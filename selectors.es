@@ -3,10 +3,12 @@ import { createSelector } from 'reselect'
 import { stateSelector, shipsSelector, equipDataSelectorFactory,
   shipDataSelectorFactory, shipEquipDataSelectorFactory,
   fleetShipsDataSelectorFactory, fleetShipsEquipDataSelectorFactory,
-  fleetStateSelectorFactory } from 'views/utils/selectors'
+  fleetStateSelectorFactory,
+  extensionSelectorFactory } from 'views/utils/selectors'
 import fp from 'lodash/fp'
+import { flatten } from 'lodash'
 
-import { getTransportPoint } from './utils'
+import { PLUGIN_KEY, getTransportPoint } from './utils'
 import { getFleetAvailableAACIs, getShipAvaliableAACIs, getShipAllAACIs, getShipAACIs } from './aaci'
 import { isOASW } from './oasw'
 
@@ -145,4 +147,24 @@ export const shipMenuDataSelector = createSelector(
       fp.map(ship => ship.api_id),
       fp.map(shipId => ShipItemSelectorFactory(shipId)(state)),
     )(_ships)
+)
+
+export const deckPlannerCurrentSelector = createSelector(
+  [
+    extensionSelectorFactory(PLUGIN_KEY),
+  ], state => state.dpCurrent
+)
+
+export const deckPlannerAreaSelectorFactory = memoize(areaIndex =>
+  createSelector(
+    [
+      deckPlannerCurrentSelector,
+    ], current => current[areaIndex] || []
+  )
+)
+
+export const deckPlannerAllShipIdsSelector = createSelector(
+  [
+    deckPlannerCurrentSelector,
+  ], current => flatten(current)
 )

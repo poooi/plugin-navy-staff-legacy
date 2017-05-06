@@ -10,7 +10,7 @@ export const onDPInit = ({ color, mapname }) =>
   ({
     type: `@@${PLUGIN_KEY}@dp-init`,
     color,
-    name,
+    mapname,
   })
 
 export const onAddShip = ({ shipId, areaIndex }) =>
@@ -66,6 +66,12 @@ export const reducer = (state = initState, action) => {
           ...state,
           dpCurrent: [...current, ...new Array(len).fill([])],
         }
+      } else if (current.length > mapname.length) {
+        const newCurrent = current.slice(0, mapname.length)
+        return {
+          ...state,
+          dpCurrent: newCurrent,
+        }
       }
       break
     }
@@ -80,7 +86,7 @@ export const reducer = (state = initState, action) => {
       }
       break
     }
-    case `@@${PLUGIN_KEY}@dp-removeShip`: {
+    case `@@${PLUGIN_KEY}@dp-removeship`: {
       const newCurrent = current.slice()
       if (newCurrent[areaIndex].includes(shipId)) {
         newCurrent[areaIndex] = newCurrent[areaIndex].filter(id => id !== shipId)

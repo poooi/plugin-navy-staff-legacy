@@ -6,9 +6,12 @@ import { get } from 'lodash'
 import fp from 'lodash/fp'
 import { connect } from 'react-redux'
 
+import { onAddShip, onRemoveShip, onDisplaceShip } from '../../redux'
 import AddShipDropdown from './add-ship-dropdown'
-import { shipMenuDataSelector, ShipItemSelectorFactory } from '../../selectors'
+import { shipMenuDataSelector, ShipItemSelectorFactory, deckPlannerAreaSelectorFactory } from '../../selectors'
 import { shipTypes } from './constants'
+
+const { dispatch } = window
 
 window.i18n['poi-plugin-navy-staff'] = new (require('i18n-2'))({
   locales: ['zh-CN', 'zh-TW', 'ja-JP', 'en-US', 'ko-KR'],
@@ -101,34 +104,29 @@ const ShipChip = connect(
 })
 
 const Area = connect(
-  state => ({
+  (state, props) => ({
     ships: shipMenuDataSelector(state),
+    shipIds: deckPlannerAreaSelectorFactory(props.index)(state),
   })
 )(class Area extends Component {
 
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      shipIds: [],
-    }
-  }
-
   handleAddShip = (eventKey, e) => {
-    this.setState({
-      shipIds: [...new Set([...this.state.shipIds, eventKey])],
-    })
+    dispatch(onAddShip({
+      shipId: eventKey,
+      areaIndex: this.props.index,
+    }))
   }
 
   handleRemoveShip = id => () => {
-    this.setState({
-      shipIds: this.state.shipIds.filter(shipId => shipId !== id),
-    })
+    console.log(id, this.props.index)
+    dispatch(onRemoveShip({
+      shipId: id,
+      areaIndex: this.props.index,
+    }))
   }
 
   render() {
-    const { area, index, ships } = this.props
-    const { shipIds } = this.state
+    const { area, index, ships, shipIds } = this.props
     return (
       <div style={{ border: `solid 1px ${hexToRGBA(area.color, 0.5)}` }} className="area">
         <div style={{ backgroundColor: hexToRGBA(area.color, 0.5) }}>

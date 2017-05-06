@@ -6,6 +6,10 @@ import { Panel, Label } from 'react-bootstrap'
 import FA from 'react-fontawesome'
 
 import Area from './area'
+import { onDPInit } from '../../redux'
+import { deckPlannerCurrentSelector } from '../../selectors'
+
+const { dispatch } = window
 
 // const { i18n } = window
 // const __ = i18n['poi-plugin-navy-staff'].__.bind(i18n['poi-plugin-navy-staff'])
@@ -27,6 +31,7 @@ const DeckPlannerView = connect(
   (state) => ({
     color: get(state, 'fcd.shiptag.color', []),
     mapname: get(state, 'fcd.shiptag.mapname', []),
+    current: deckPlannerCurrentSelector(state),
   })
 )(class DeckPlannerView extends Component {
 
@@ -42,6 +47,16 @@ const DeckPlannerView = connect(
         color: color[index],
         ships: [],
       })),
+    }
+  }
+
+  componentWillMount = () => {
+    const { mapname, color, current } = this.props
+    if (current.length !== mapname.length) {
+      dispatch(onDPInit({
+        color,
+        mapname,
+      }))
     }
   }
 

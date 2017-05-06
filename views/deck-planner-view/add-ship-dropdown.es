@@ -6,7 +6,7 @@ import { resolve } from 'path'
 import fp from 'lodash/fp'
 import FontAwesome from 'react-fontawesome'
 
-import { shipMenuDataSelector } from '../../selectors'
+import { shipMenuDataSelector, deckPlannerAllShipIdsSelector } from '../../selectors'
 import { shipSuperTypeMap } from './constants'
 
 window.i18n['poi-plugin-navy-staff'] = new (require('i18n-2'))({
@@ -43,7 +43,6 @@ class ShipMenu extends Component {
   }
 
   handleTypeSelect = index => () => {
-    console.log(index)
     this.setState({
       typeIndex: index,
     })
@@ -91,8 +90,9 @@ const AddShipDropdown = connect(
   (state, props) => ({
     shipItems: shipMenuDataSelector(state),
     area: props.area || '',
+    allShipIds: deckPlannerAllShipIdsSelector(state),
   })
-)(({ shipItems, area, onSelect }) =>
+)(({ shipItems, area, allShipIds, onSelect }) =>
   (<Dropdown id={`add-ship-dropdown-${area}`}>
     <Dropdown.Toggle bsStyle="link">
       <FontAwesome name="plus" />
@@ -100,6 +100,7 @@ const AddShipDropdown = connect(
     <ShipMenu bsRole="menu" >
       {
         fp.flow(
+          fp.filter(ship => !allShipIds.includes(ship.id)),
           fp.sortBy(ship => -ship.lv),
           fp.map(ship => <Item onSelect={onSelect} key={ship.id} eventKey={ship.id} typeId={ship.typeId} area={ship.area}><span>{`${ship.name} Lv.${ship.lv}`}</span></Item>)
         )(shipItems)

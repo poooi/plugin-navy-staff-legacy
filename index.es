@@ -12,6 +12,7 @@ import {
 } from 'views/utils/selectors'
 
 import { combinedFleetStateSelector } from './selectors'
+import { reducer as _reducer } from './redux'
 
 import FleetView from './views/fleet-view'
 import CombinedFleetView from './views/combined-fleet-view'
@@ -209,3 +210,5 @@ const NavyStaff = connect(
 )
 
 export const reactClass = NavyStaff
+
+export const reducer = _reducer
