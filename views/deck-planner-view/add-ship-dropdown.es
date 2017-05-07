@@ -59,7 +59,7 @@ class ShipMenu extends Component {
   }
 
   render() {
-    const { shipItems, children, area } = this.props
+    const { shipItems, children, areaIndex } = this.props
     const { typeIndex } = this.state
 
     return (
@@ -73,7 +73,7 @@ class ShipMenu extends Component {
           ?
             React.Children.toArray(children)
               .filter(child => get(shipSuperTypeMap, `${typeIndex}.id`, []).includes(child.props.typeId))
-              .filter(child => [0, area].includes(child.props.area))
+              .filter(child => [0, areaIndex + 1].includes(child.props.area))
           :
             map(shipSuperTypeMap, (type, index) =>
               <Item key={type.name} eventKey={index} onSelect={this.handleTypeSelect(index)}>
@@ -89,16 +89,16 @@ class ShipMenu extends Component {
 const AddShipDropdown = connect(
   (state, props) => ({
     shipItems: shipMenuDataSelector(state),
-    area: props.area || '',
+    areaIndex: props.area,
     allShipIds: deckPlannerAllShipIdsSelector(state),
     color: get(state, 'fcd.shiptag.color', []),
   })
-)(({ shipItems, area, allShipIds, color, onSelect }) =>
-  (<Dropdown id={`add-ship-dropdown-${area}`}>
+)(({ shipItems, areaIndex, allShipIds, color, onSelect }) =>
+  (<Dropdown id={`add-ship-dropdown-${areaIndex}`}>
     <Dropdown.Toggle bsStyle="link">
       <FontAwesome name="plus" />
     </Dropdown.Toggle>
-    <ShipMenu bsRole="menu" area={area}>
+    <ShipMenu bsRole="menu" areaIndex={areaIndex}>
       {
         fp.flow(
           fp.filter(ship => !allShipIds.includes(ship.id)),
@@ -106,7 +106,7 @@ const AddShipDropdown = connect(
           fp.map(ship =>
             <Item onSelect={onSelect} key={ship.id} eventKey={ship.id} typeId={ship.typeId} area={ship.area}>
               <span>{`${ship.name} Lv.${ship.lv}`}</span>
-              {!!ship.area && <Label><FontAwesome name="tag" style={{ color: color[ship.area] }} /></Label>}
+              {!!ship.area && <Label><FontAwesome name="tag" style={{ color: color[ship.area - 1] }} /></Label>}
             </Item>)
         )(shipItems)
       }

@@ -105,7 +105,7 @@ const ShipChip = connect(
         </span>
         <span>
           {
-            area > 0 && <FA name="tag" style={{ color: color[area] }} />
+            area > 0 && <FA name="tag" style={{ color: color[area - 1] }} />
           }
         </span>
         <span>
