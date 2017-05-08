@@ -10,6 +10,6 @@ const isDE = ship => ship.api_stype === 1
 
 export const isOASW = (ship, equips) =>
   isIsuzuK2(ship) ||
-  // experimental for DE, not know if we should equip sonars
+  // experimental for PF, not know if we should equip sonars
   (isDE(ship) && taisenAbove(60)(ship)) ||
   (taisenAbove(100)(ship) && hasSome(isSonar)(equips))
