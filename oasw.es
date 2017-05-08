@@ -6,10 +6,10 @@ const hasSome = pred => xs => xs.some(pred)
 const isSonar = iconIs(18)
 const isIsuzuK2 = shipIdIs(141)
 const taisenAbove = value => ship => ship.api_taisen[0] >= value
-const isDE = ship => ship.api_stype === 1
+const isPF = ship => ship.api_stype === 1
 
 export const isOASW = (ship, equips) =>
   isIsuzuK2(ship) ||
   // experimental for PF, not know if we should equip sonars
-  (isDE(ship) && taisenAbove(60)(ship)) ||
+  (isPF(ship) && taisenAbove(60)(ship)) ||
   (taisenAbove(100)(ship) && hasSome(isSonar)(equips))
